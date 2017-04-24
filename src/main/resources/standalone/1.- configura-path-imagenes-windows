@@ -1,0 +1,40 @@
+Para testear imagenes en servidor y no perder la ruta 
+1.- modificar el standalone.xml y agregar lo siguiente (location y ImagesDirHandlerWindows)
+
+        <subsystem xmlns="urn:jboss:domain:undertow:1.2">
+            <buffer-cache name="default"/>
+            <server name="default-server">
+                <http-listener name="default" socket-binding="http"/>
+                <host name="default-host" alias="localhost">
+                    <location name="/" handler="welcome-content"/>
+                    <location name="/imagenes" handler="ImagesDirHandlerWindows"/>
+                    <filter-ref name="server-header"/>
+                    <filter-ref name="x-powered-by-header"/>
+                </host>
+            </server>
+            <servlet-container name="default">
+                <jsp-config/>
+                <websockets/>
+            </servlet-container>
+            <handlers>
+                <file name="welcome-content" path="${jboss.home.dir}/welcome-content"/>
+                <file name="ImagesDirHandlerWindows" path="C:\opt\imagenes" directory-listing="true"/>
+            </handlers>
+            <filters>
+                <response-header name="server-header" header-name="Server" header-value="WildFly/8"/>
+                <response-header name="x-powered-by-header" header-name="X-Powered-By" header-value="Undertow/1"/>
+            </filters>
+        </subsystem>
+
+2.- Crear la carpeta en windows:
+    C:\opt\imagenes\proveedor
+
+3.- Descargar imagenes de servidor remoto y descargar a carpeta anterior, para mentener los mismos id de imagenes de la BD remota
+    Descargar de /opt/imagenes/proveedor
+
+4.- Habilitar properties en windows cuando se trabaje local en bennder.properties
+
+#windows
+directorio.imagen.proveedor = C:/opt/imagenes/proveedor
+directorio.imagen.location.server = /imagenes/proveedor/
+

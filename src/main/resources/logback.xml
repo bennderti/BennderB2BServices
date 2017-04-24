@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!--<pattern>%d{dd-MM-yyyy HH:mm:ss} %-5level %logger.%M[%L] - %msg\n</pattern>-->
+            <pattern>[Bennder] %-5level %class{0}.%M[%L] - %msg\n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${WILDFLY_HOME}/standalone/log/bennderRest.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>bennderRest.%d{yyyy-MM-dd}.%i.log.gz</FileNamePattern>
+            <MaxHistory>30</MaxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>50MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %class{0}.%M[%L] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.springframework" level="info" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+	
+    <logger name="cl.bennder.bennderservices" level="info" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="ROLLING" />
+    </logger>
+	 
+    <root level="info">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="ROLLING" />
+    </root>
+
+</configuration>
