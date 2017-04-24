@@ -9,7 +9,6 @@ package cl.bennder.bennderservices.model;
  *
  * @author dyanez
  */
-import java.util.Date;
 
 public class SimpleMail {
 
