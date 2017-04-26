@@ -23,7 +23,7 @@
     <!-- tutorial:
     Instalación de jdbc postgresql
     http://jan.zawodny.pl/blog/2011/07/jboss-7-postgresql-9 -->
-    <jee:jndi-lookup id="dataSource" jndi-name="jboss/datasources/bennderDS"/>
+    <jee:jndi-lookup id="dataSource" jndi-name="jboss/datasources/bennderB2BDS"/>
     
     
     <tx:annotation-driven transaction-manager="transactionManager"/>
