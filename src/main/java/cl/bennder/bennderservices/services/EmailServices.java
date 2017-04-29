@@ -30,10 +30,11 @@ public interface EmailServices {
      * Método encargado de completar y enviar correo al usuario
      * @param password contraseña del usuario
      * @param usuario usuario bennder
+     * @param urlIndex URL de index enviada a usuario
      * @author dyanez
      * @return Validación de envío de correo
      */
-    public Validacion completarEnviarCorreoPassWord(String password, String usuario);
+    public Validacion completarEnviarCorreoPassWord(String password, String usuario,String urlIndex);
     
     
     

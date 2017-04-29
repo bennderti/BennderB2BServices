@@ -132,7 +132,7 @@ public class EmailServicesImpl implements EmailServices{
                         //.- se busca contraseña
                         log.info("{} obtiendo contraseña para comenzar con la creación de correo",existeCorreo);
                         String password = usuarioMapper.getPasswordByUsuario(request.getUsuarioCorreo());
-                        Validacion v = this.completarEnviarCorreoPassWord(password, request.getUsuarioCorreo());
+                        Validacion v = this.completarEnviarCorreoPassWord(password, request.getUsuarioCorreo(),request.getIndex());
                         response.setValidacion(v);
                     }
                     else{
@@ -164,7 +164,7 @@ public class EmailServicesImpl implements EmailServices{
     }
 
     @Override
-    public Validacion completarEnviarCorreoPassWord(String password, String usuario) {
+    public Validacion completarEnviarCorreoPassWord(String password, String usuario, String urlIndex) {
         Validacion response = new Validacion("0", "1", "Problemas al completar correo");
         log.info("inicio");
         try {
@@ -187,26 +187,26 @@ public class EmailServicesImpl implements EmailServices{
                     datosEmailTemplate.setNombreTemplate(plantillaCorreo.getNombre());
                     datosEmailTemplate.setMailTo(usuario);
                     
-                    ParametroSistema paramUrlBennder = this.parametroSistemaServices.getDatosParametroSistema(TP_BENNDER_USUARIO, C_URL_PLATAFORMA);
-                    if(paramUrlBennder != null){
-                        log.info("Url acceso plataforma bennder ->{}, para  usuario->{}",paramUrlBennder.getValorA(),usuario);
+//                    ParametroSistema paramUrlBennder = this.parametroSistemaServices.getDatosParametroSistema(TP_BENNDER_USUARIO, C_URL_PLATAFORMA);
+//                    if(paramUrlBennder != null){
+                        log.info("Url acceso plataforma bennder ->{}, para  usuario->{}",urlIndex,usuario);
                        //Completando datos de contexto
                         VelocityContext velocityContext = new VelocityContext();
                         velocityContext.put("user", usuario);
                         velocityContext.put("password", password);
-                        velocityContext.put("urlBennderUsuario", paramUrlBennder.getValorA());
+                        velocityContext.put("urlBennderUsuario", urlIndex);
 
                         datosEmailTemplate.setContext(velocityContext);
                         log.info("obteniendo beans de email...");
                         ApplicationContext context = new ClassPathXmlApplicationContext(VELOCITY_BEANS_XML);
                         Mailer mailer = (Mailer) context.getBean("mailer");
                         response = mailer.envioCorreoTemplate(datosEmailTemplate, passMailFrom); 
-                    }
-                    else{  
-                        response.setCodigoNegocio("3");
-                        response.setMensaje("Sin plataforma configurada para usuario, favor contactar a soporte.");
-                        log.info("Sin plataforma configurada para usuario->{}",usuario);
-                    }
+//                    }
+//                    else{  
+//                        response.setCodigoNegocio("3");
+//                        response.setMensaje("Sin plataforma configurada para usuario, favor contactar a soporte.");
+//                        log.info("Sin plataforma configurada para usuario->{}",usuario);
+//                    }
                   
                 }
                 else{

@@ -8,7 +8,6 @@ package cl.bennder.bennderservices.mapper;
 import cl.bennder.entitybennderwebrest.model.Contacto;
 import cl.bennder.entitybennderwebrest.model.Direccion;
 import cl.bennder.entitybennderwebrest.model.Usuario;
-import java.util.List;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
@@ -93,12 +92,22 @@ public interface UsuarioMapper {
    
    /**
     * Método que valida si existe el usuario con el password indicado. Retorna un idUsuario con su estado
-    * @param usuario, password
+    * @param password Contraseña de usuario 
+    * @param usuario Usuario correo
     * @return Usuario 
     * @author mgutierrez
     */
-   @Select("SELECT ID_USUARIO AS IDUSUARIO, ID_ESTADO_USUARIO AS IDESTADO  FROM USUARIO WHERE USUARIO = #{usuario} AND PASSWORD =#{pass}")
+   @Select("SELECT ID_USUARIO AS IDUSUARIO,HABILITADO AS HABILITADO FROM USUARIO WHERE USUARIO = #{usuario} AND PASSWORD =#{pass}")
    public Usuario getUsuarioValidacion(@Param("usuario") String usuario,@Param("pass") String password);
+   
+   
+   /***
+    * Obtiene identificador de proveedor de usuario
+    * @param idUsuario rut de usuario sin dv
+    * @return 
+    */
+   @Select("SELECT ID_PROVEEDOR FROM USUARIO_PROVEEDOR WHERE ID_USUARIO =16536869")
+   public Integer getIdProvedorByUsuario(Integer idUsuario);
     
    
    

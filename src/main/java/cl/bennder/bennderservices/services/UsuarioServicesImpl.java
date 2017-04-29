@@ -69,16 +69,33 @@ public class UsuarioServicesImpl implements UsuarioServices{
                 usuario = usuarioMapper.getUsuarioValidacion(request.getUser(), request.getPassword());
                 
                 if(usuario != null){
-                    //.- obtener idUSuario(rut usuario sin dv) por usuario
-                    response.setIdUsuario(usuario.getIdUsuario());    
-                    response.setIdEstadoUsuario(usuario.getIdEstado());
-                    response.getValidacion().setCodigo(CodigoValidacion.OK);
-                    response.getValidacion().setMensaje("Validación OK");
-                    log.info("registra acceso usuario ->{}",usuario.getIdUsuario());
-                    this.registraAccesoUsuario(usuario.getIdUsuario());
                     
-                    
-                    log.info("Validación OK");
+                    if(Boolean.TRUE.equals(usuario.getHabilitado())){
+                        //.- validando si esta asociado a un proveedors
+                        Integer idProveedor = usuarioMapper.getIdProvedorByUsuario(usuario.getIdUsuario());
+                        if(idProveedor!=null){
+                            //.- obtener idUSuario(rut usuario sin dv) por usuario
+                            response.setIdUsuario(usuario.getIdUsuario());    
+                            //response.setIdEstadoUsuario(usuario.getIdEstado());
+                            response.getValidacion().setCodigo(CodigoValidacion.OK);
+                            response.getValidacion().setCodigoNegocio(CodigoValidacion.OK);
+                            response.getValidacion().setMensaje("Validación OK");
+                            log.info("registra acceso usuario ->{}",usuario.getIdUsuario());
+                            log.info("Validación OK");
+                            this.registraAccesoUsuario(usuario.getIdUsuario());
+                        }
+                        else{
+                            response.getValidacion().setCodigoNegocio("1");
+                            response.getValidacion().setMensaje("Usuario no registrado en comercio");
+                            log.info("Usuario no registrado en comercio ->{}",usuario.getIdUsuario());
+                        }
+                    }
+                    else{
+                        response.getValidacion().setCodigoNegocio("2");
+                        response.getValidacion().setMensaje("Usuario no habilitado");
+                        log.info("Usuario no habilitado ->{}",usuario.getIdUsuario());
+                    }
+
                 }
                 else{
                     response.getValidacion().setMensaje("Usuario y contraseña incorrectos");
