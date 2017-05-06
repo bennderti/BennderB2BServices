@@ -271,7 +271,7 @@ public class ProveedorServicesImpl implements ProveedorServices{
              
             if(request!=null && request.getProveedor()!=null && request.getProveedor().getNombre()!= null
                && request.getProveedor().getRut()!=null){
-                String mensajeLog = "[idUsuario -> "+request.getIdUsuario()+"] ";
+                String mensajeLog = "";//[idUsuario -> "+request.getIdUsuario()+"] ";
                 log.info("Datos request ->{}",request.toString());
                 if(request.getProveedor().getIdProveedor() == null){
                     log.info("{} Validando datos para la creación de proveedor...",mensajeLog);                    

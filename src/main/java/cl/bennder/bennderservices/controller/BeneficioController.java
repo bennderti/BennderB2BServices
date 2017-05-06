@@ -6,6 +6,7 @@
 package cl.bennder.bennderservices.controller;
 
 import cl.bennder.bennderservices.services.BeneficioService;
+import cl.bennder.entitybennderwebrest.request.GetTodasCategoriaRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import cl.bennder.entitybennderwebrest.request.InfoBeneficioRequest;
+import cl.bennder.entitybennderwebrest.request.UploadBeneficioImagenRequest;
+import cl.bennder.entitybennderwebrest.request.UploadImagenesGenericaRequest;
+import cl.bennder.entitybennderwebrest.response.GetTodasCategoriaResponse;
 import cl.bennder.entitybennderwebrest.response.InfoBeneficioResponse;
+import cl.bennder.entitybennderwebrest.response.UploadBeneficioImagenResponse;
+import cl.bennder.entitybennderwebrest.response.UploadImagenesGenericaResponse;
+import cl.bennder.entitybennderwebrest.response.ValidacionResponse;
 
 /**
  *
@@ -39,6 +46,30 @@ public class BeneficioController {
         log.info("[beneficio/guardar] - inicio ");
         InfoBeneficioResponse response = beneficioService.guardarBenecifio(request);
         log.info("[beneficio/guardar] - fin ");
+        
+        return response;
+    }
+    @RequestMapping(value = "beneficio/creaActualizaDirectorioGenericoImagenes", method = RequestMethod.POST)
+    public @ResponseBody ValidacionResponse creaActualizaDirectorioGenericoImagenes() {
+        log.info("[beneficio/creaActualizaDirectorioGenericoImagenes] - inicio ");
+        ValidacionResponse response = beneficioService.creaActualizaDirectorioGenericoImagenes();
+        log.info("[beneficio/creaActualizaDirectorioGenericoImagenes] - fin ");
+        
+        return response;
+    }
+    @RequestMapping(value = "beneficio/getTodasCategorias", method = RequestMethod.POST)
+    public @ResponseBody GetTodasCategoriaResponse getTodasCategorias(@RequestBody GetTodasCategoriaRequest request) {
+        log.info("[beneficio/getTodasCategorias] - inicio ");
+        GetTodasCategoriaResponse response = beneficioService.getTodasCategorias(request);
+        log.info("[beneficio/getTodasCategorias] - fin ");
+        
+        return response;
+    }
+     @RequestMapping(value = "beneficio/uploadImagenesGenerica", method = RequestMethod.POST)
+    public @ResponseBody UploadImagenesGenericaResponse uploadImagenesGenerica(@RequestBody UploadImagenesGenericaRequest request) {
+        log.info("[beneficio/uploadImagenesGenerica] - inicio ");
+        UploadImagenesGenericaResponse response = beneficioService.uploadImagenesGenerica(request);
+        log.info("[beneficio/uploadImagenesGenerica] - fin ");
         
         return response;
     }
