@@ -5,10 +5,20 @@
  */
 package cl.bennder.bennderservices.controller;
 
+import cl.bennder.bennderservices.security.JwtTokenUtil;
+import cl.bennder.bennderservices.security.JwtUser;
 import cl.bennder.bennderservices.services.UsuarioServices;
+import cl.bennder.entitybennderwebrest.model.Validacion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,10 +44,18 @@ public class LoginController {
 
     @Autowired
     private EmailServices emailServices;
-    
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     //.- login
-    @RequestMapping(value = "login", method = RequestMethod.POST)
+    /*@RequestMapping(value = "login", method = RequestMethod.POST)
     public @ResponseBody
     LoginResponse login(@RequestBody LoginRequest request) {
         log.info("[login] - inicio ");
@@ -46,6 +64,39 @@ public class LoginController {
         log.info("[login] - fin ");
         
         return response;
+    }*/
+
+    /**
+     * Metodo de login que autentica al usuario a travez de spring security con Jwt
+     * @param authenticationRequest
+     * @return Json con la validacion de usuario
+     * @throws AuthenticationException
+     */
+    @RequestMapping(value = "login", method = RequestMethod.POST)
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest authenticationRequest) throws AuthenticationException {
+        log.info("[login] - inicio ");
+
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setValidacion(new Validacion("0","1","Usuario no encontrado"));
+        // Perform the security
+        final Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        authenticationRequest.getUser(),
+                        authenticationRequest.getPassword()
+                )
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // Reload password post-security so we can generate token
+        final JwtUser userDetails = (JwtUser) userDetailsService.loadUserByUsername(authenticationRequest.getUser());
+        final String token = jwtTokenUtil.generateToken(userDetails);
+
+        // Return the token
+        loginResponse.setValidacion(new Validacion("0","0","login exitoso"));
+        loginResponse.setToken(token);
+        return ResponseEntity.ok(loginResponse);
+
+        //TODO: Danilo ahi despues agregas la logica que tenias en el antiguo metodo de login.
     }
     
      /***

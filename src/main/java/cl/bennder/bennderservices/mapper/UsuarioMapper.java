@@ -7,14 +7,13 @@ package cl.bennder.bennderservices.mapper;
 
 import cl.bennder.entitybennderwebrest.model.Contacto;
 import cl.bennder.entitybennderwebrest.model.Direccion;
+import cl.bennder.entitybennderwebrest.model.Perfil;
 import cl.bennder.entitybennderwebrest.model.Usuario;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.IntegerTypeHandler;
 import org.apache.ibatis.type.StringTypeHandler;
+
+import java.util.List;
 
 /**
  *
@@ -129,4 +128,24 @@ public interface UsuarioMapper {
      */
     @Select("SELECT password FROM USUARIO WHERE USUARIO = #{correoUsuario}")
     public String getPasswordByUsuario(String correoUsuario);
+
+    /**
+     * Metodo para realizar la autenticacion de usuarios a traves de spring security con Jwt
+     * @param usuario
+     * @return Usuario
+     * @author driveros
+     */
+    @Select(" SELECT ID_USUARIO AS IDUSUARIO, ID_USUARIO, PASSWORD, USUARIO AS USUARIO, NOMBRES, APELLIDO_P AS APELLIDOP, APELLIDO_M AS APELLIDOM, HABILITADO  " +
+            " FROM USUARIO u" +
+            " WHERE USUARIO = #{usuario}")
+    @Results(value = {
+            @Result (property = "perfiles", column = "ID_USUARIO", javaType=List.class, many = @Many(select = "obtenerPerfilesUsuario"))
+    })
+    public Usuario getUsuarioByUsername(@Param("usuario") String usuario);
+
+    @Select(" SELECT p.id_perfil, p.nombre" +
+            " FROM perfil p " +
+            " INNER JOIN perfil_usuario pu ON pu.id_perfil = p.id_perfil" +
+            " WHERE pu.id_usuario = #{idUsuario}")
+    List<Perfil> obtenerPerfilesUsuario(Integer idUsuario);
 }
