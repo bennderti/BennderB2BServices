@@ -413,7 +413,7 @@ INSERT INTO PROVEEDOR.COMUNA(ID_COMUNA,ID_REGION,NOMBRE) VALUES(15202,15,'Genera
 /* Tipos de beneficio    */
 /*==============================================================*/
 insert into tipo_beneficio values(1,'Descuento');
-insert into tipo_beneficio values(2,'Producto');
+insert into tipo_beneficio values(2,'Oferta');
 insert into tipo_beneficio values(3,'Adicional');
 
 

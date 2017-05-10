@@ -5,6 +5,7 @@
  */
 package cl.bennder.bennderservices.controller;
 
+import cl.bennder.bennderservices.security.JwtTokenUtil;
 import cl.bennder.bennderservices.services.BeneficioService;
 import cl.bennder.entitybennderwebrest.request.GetTodasCategoriaRequest;
 import org.slf4j.Logger;
@@ -16,13 +17,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import cl.bennder.entitybennderwebrest.request.InfoBeneficioRequest;
-import cl.bennder.entitybennderwebrest.request.UploadBeneficioImagenRequest;
+import cl.bennder.entitybennderwebrest.request.InfoInicioBeneficioRequest;
 import cl.bennder.entitybennderwebrest.request.UploadImagenesGenericaRequest;
 import cl.bennder.entitybennderwebrest.response.GetTodasCategoriaResponse;
 import cl.bennder.entitybennderwebrest.response.InfoBeneficioResponse;
-import cl.bennder.entitybennderwebrest.response.UploadBeneficioImagenResponse;
+import cl.bennder.entitybennderwebrest.response.InfoInicioBeneficioResponse;
 import cl.bennder.entitybennderwebrest.response.UploadImagenesGenericaResponse;
 import cl.bennder.entitybennderwebrest.response.ValidacionResponse;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -35,6 +37,9 @@ public class BeneficioController {
 
     @Autowired
     BeneficioService beneficioService;
+    
+    @Autowired
+    JwtTokenUtil jwtTokenUtil;
 
     /***
      * Servicio expuesto para guardar datos de beneficio
@@ -42,9 +47,10 @@ public class BeneficioController {
      * @return 
      */
     @RequestMapping(value = "beneficio/guardar", method = RequestMethod.POST)
-    public @ResponseBody InfoBeneficioResponse guardarBeneficio(@RequestBody InfoBeneficioRequest request) {
+    public @ResponseBody InfoBeneficioResponse guardarBeneficio(@RequestBody InfoBeneficioRequest request,HttpServletRequest req) {
         log.info("[beneficio/guardar] - inicio ");
-        InfoBeneficioResponse response = beneficioService.guardarBenecifio(request);
+        request.setIdUsuario(jwtTokenUtil.getIdUsuarioDesdeRequest(req));
+        InfoBeneficioResponse response = beneficioService.guardarBeneficio(request);
         log.info("[beneficio/guardar] - fin ");
         
         return response;
@@ -73,5 +79,21 @@ public class BeneficioController {
         
         return response;
     }
+    
+      @RequestMapping(value = "beneficio/infoCreaActualiza", method = RequestMethod.POST)
+    public @ResponseBody InfoInicioBeneficioResponse getInfoInicioCreaActualizaBeneficio(@RequestBody InfoInicioBeneficioRequest request,HttpServletRequest req) {
+        log.info("[beneficio/infoCreaActualiza] - inicio ");
+        
+        //.- obtnener usuario desde httpserverlet usuando clase de obtencion de usuario dado token y set en request
+        //-----------------------------------------------
+        //---------------------------------------------
+        //---------------------
+        request.setIdUsuario(jwtTokenUtil.getIdUsuarioDesdeRequest(req));
+        InfoInicioBeneficioResponse response = beneficioService.getInfoInicioCreaActualizaBeneficio(request);
+        log.info("[beneficio/infoCreaActualiza] - fin ");
+        
+        return response;
+    }
+    
     
 }

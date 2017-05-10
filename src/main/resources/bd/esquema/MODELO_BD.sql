@@ -47,6 +47,8 @@ drop table if exists PROVEEDOR.PROVEEDOR;
 
 drop table if exists PROVEEDOR.REGION;
 
+drop table if exists PROVEEDOR.SUCURSAL_BENEFICIO;
+
 drop table if exists PROVEEDOR.SUCURSAL_PROVEEDOR;
 
 drop table if exists PROVEEDOR.TIPO_BENEFICIO;
@@ -54,6 +56,8 @@ drop table if exists PROVEEDOR.TIPO_BENEFICIO;
 drop table if exists PROVEEDOR.USUARIO;
 
 drop table if exists PROVEEDOR.USUARIO_PROVEEDOR;
+
+
 
 /*==============================================================*/
 /* Table: ACCESO_USUARIO                                        */
@@ -254,6 +258,15 @@ create table PROVEEDOR.REGION (
 
 
 /*==============================================================*/
+/* Table: SUCURSAL_BENEFICIO                                    */
+/*==============================================================*/
+create table PROVEEDOR.SUCURSAL_BENEFICIO (
+   ID_SUCURSAL          INT4                 not null,
+   ID_BENEFICIO         INT4                 not null,
+   constraint PK_SUCURSAL_BENEFICIO primary key (ID_SUCURSAL, ID_BENEFICIO)
+);
+
+/*==============================================================*/
 /* Table: SUCURSAL_PROVEEDOR                                    */
 /*==============================================================*/
 create table PROVEEDOR.SUCURSAL_PROVEEDOR (
@@ -409,6 +422,16 @@ alter table PROVEEDOR.PERMISO_PERFIL
 alter table PROVEEDOR.REGION
    add constraint FK_REGION_REFERENCE_PAIS foreign key (ID_PAIS)
       references PROVEEDOR.PAIS (ID_PAIS)
+      on delete restrict on update restrict;
+
+alter table PROVEEDOR.SUCURSAL_BENEFICIO
+   add constraint FK_SUCURSAL_REFERENCE_SUCURSAL foreign key (ID_SUCURSAL)
+      references PROVEEDOR.SUCURSAL_PROVEEDOR (ID_SUCURSAL)
+      on delete restrict on update restrict;
+
+alter table PROVEEDOR.SUCURSAL_BENEFICIO
+   add constraint FK_SUCURSAL_REFERENCE_BENEFICI foreign key (ID_BENEFICIO)
+      references PROVEEDOR.BENEFICIO (ID_BENEFICIO)
       on delete restrict on update restrict;
 
 alter table PROVEEDOR.SUCURSAL_PROVEEDOR

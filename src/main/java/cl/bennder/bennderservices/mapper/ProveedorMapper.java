@@ -9,6 +9,7 @@ import cl.bennder.entitybennderwebrest.model.BeneficioCargador;
 import cl.bennder.entitybennderwebrest.model.BeneficioImagen;
 import cl.bennder.entitybennderwebrest.model.Categoria;
 import cl.bennder.entitybennderwebrest.model.Proveedor;
+import cl.bennder.entitybennderwebrest.model.SucursalProveedor;
 import java.util.List;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
@@ -21,6 +22,13 @@ import org.apache.ibatis.annotations.Update;
  * @author dyanez
  */
 public interface ProveedorMapper {
+    
+    
+    @Select("select sp.id_sucursal as idSucursal,sp.nombre as nombreSucursal from usuario_proveedor up " +
+            "inner join sucursal_proveedor sp on sp.id_proveedor = up.id_proveedor " +
+            "where up.id_usuario = #{idUsuario}  and sp.habilitado = true")
+    public List<SucursalProveedor> getSucursalProveedorByIdUsuario(Integer idUsuario);
+    
     
     /***
      * Encargado de guardar una imagen asociada a beneficio
@@ -85,4 +93,13 @@ public interface ProveedorMapper {
             "   path_logo= #{pathLogo} " +
             " WHERE id_proveedor = #{idProveedor}")
     public void actualizaDatosGeneralesProveedor(Proveedor proveedor);
+    
+    
+    /***
+     * Obtiene el id del proveedor del usuario conectado
+     * @param idUsuario rut de usuario sin dv
+     * @return 
+     */
+    @Select("select id_proveedor from usuario_proveedor where id_usuario = #{idUsuario}")
+    public Integer getIdProveedorByUser(Integer idUsuario);
 }
