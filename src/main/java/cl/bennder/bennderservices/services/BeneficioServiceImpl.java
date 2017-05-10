@@ -501,6 +501,11 @@ public class BeneficioServiceImpl implements BeneficioService{
                             Beneficio beneficio = new Beneficio(idBeneficio,request.getTitulo(), request.getDescripcion(), request.getFechaCreacion(), request.getFechaExpiracion(), null, null, null, request.getStock(), idProveedor, request.getIdCategoria(), request.getTipoBeneficio(), request.getLimiteStock(), 0);
                              if(request.getTipoBeneficio()!=null && request.getTipoBeneficio().getIdTipoBeneficio()!=null
                                && request.getTipoBeneficio().getIdTipoBeneficio() < 3){
+                                 
+                                 
+//                                 beneficio.setFechaCreacionSql(new java.sql.Date(request.getFechaCreacion().getTime()));
+//                                 beneficio.setFechaExpiracionSQl(new java.sql.Date(request.getFechaExpiracion().getTime()));
+                                 
                                 if(idBeneficio!=null && idBeneficio!=0){
                                     log.info("{} Actualizando datos generales de beneficio ->{}.",mensajeLog,idBeneficio);
                                     beneficioMapper.updateDatosGeneralesBeneficio(beneficio);
@@ -511,7 +516,9 @@ public class BeneficioServiceImpl implements BeneficioService{
                                     beneficioMapper.insertDatosGeneralesBeneficio(beneficio);
                                     log.info("{} Beneficio en creación ,por tanto se obtiene identificador ->{}.",mensajeLog,idBeneficio);
                                 }
-                                
+//                                log.info("{} Actualizando fechas de inicio/fin de beneficio ->{}.",mensajeLog,idBeneficio);
+//                                beneficioMapper.updateFechaInicioExpiracion(new java.sql.Date(request.getFechaCreacion().getTime()), new java.sql.Date(request.getFechaExpiracion().getTime()), idBeneficio);
+//                                
                                 log.info("{} Actualizando condiciones({}) de beneficio->{}",mensajeLog,request.getCondiciones().size(),idBeneficio);
                                 beneficioMapper.deleteCondiciones(idBeneficio);
                                 for(int i = 0;i < request.getCondiciones().size();i++){
