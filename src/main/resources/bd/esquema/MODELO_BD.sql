@@ -75,7 +75,7 @@ create table PROVEEDOR.BENEFICIO (
    ID_TIPO_BENEFICIO    INT4                 null,
    ID_PROVEEDOR         INT4                 null,
    ID_CATEGORIA         INT4                 null,
-   TITULO               VARCHAR(100)          not null,
+   TITULO               VARCHAR(150)          not null,
    DESCRIPCION          VARCHAR(1000)        not null,
    FECHA_CREACION       date                 not null default CURRENT_TIMESTAMP,
    FECHA_EXPIRACION     date                 not null default CURRENT_TIMESTAMP,
