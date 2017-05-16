@@ -252,10 +252,14 @@ public class BeneficioServiceImpl implements BeneficioService{
             if(request != null){
                 
                 if(request.getIdUsuario()!=null){
+                    Integer idProveedor = proveedorMapper.getIdProveedorByUser(request.getIdUsuario());
+                    log.info("idProveedor ->{}",idProveedor);
                     log.info("obteniendo todas las categorias y subcategorias asociadas.");
                     response.setCategorias(categoriaMapper.getAllCategorias());
                     log.info("obteniendo sucursusales del proveedor");
-                    response.setSucursales(proveedorMapper.getSucursalProveedorByIdUsuario(request.getIdUsuario()));
+                    response.setSucursales(proveedorMapper.getSucursalProveedor(idProveedor));
+                    response.setRegionesSucursal(proveedorMapper.getRegionesSucursales(idProveedor));
+                    response.setComunasSucursales(proveedorMapper.getComunasSucursales(idProveedor));
                     if(response.getSucursales()!=null && response.getSucursales().size() > 0){
                         log.info("Generando rutas de imagenes genéricas");
                         //.- recorriendo categoria/subcategorias

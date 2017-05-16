@@ -8,14 +8,19 @@ package cl.bennder.bennderservices.mapper;
 import cl.bennder.entitybennderwebrest.model.BeneficioCargador;
 import cl.bennder.entitybennderwebrest.model.BeneficioImagen;
 import cl.bennder.entitybennderwebrest.model.Categoria;
+import cl.bennder.entitybennderwebrest.model.Comuna;
 import cl.bennder.entitybennderwebrest.model.Proveedor;
+import cl.bennder.entitybennderwebrest.model.Region;
 import cl.bennder.entitybennderwebrest.model.SucursalProveedor;
 import java.util.List;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.type.IntegerTypeHandler;
 
 /**
  *
@@ -24,11 +29,27 @@ import org.apache.ibatis.annotations.Update;
 public interface ProveedorMapper {
     
     
-    @Select("select sp.id_sucursal as idSucursal,sp.nombre as nombreSucursal from usuario_proveedor up " +
-            "inner join sucursal_proveedor sp on sp.id_proveedor = up.id_proveedor " +
-            "where up.id_usuario = #{idUsuario}  and sp.habilitado = true")
-    public List<SucursalProveedor> getSucursalProveedorByIdUsuario(Integer idUsuario);
+    @Select("select sp.id_sucursal as idSucursal,sp.nombre as nombreSucursal,c.id_comuna as idComuna from sucursal_proveedor sp inner join direccion d " +
+            "on sp.id_direccion = d.id_direccion inner join comuna c on c.id_comuna = d.id_comuna " +
+            "where sp.id_proveedor = #{idProveedor} and sp.habilitado = true")
+    public List<SucursalProveedor> getSucursalProveedor(Integer idProveedor);
     
+    @Select("select id_region as idRegion,nombre from region where id_region in( " +
+            "select distinct c.id_region from sucursal_proveedor sp inner join direccion d " +
+            "on sp.id_direccion = d.id_direccion inner join comuna c on c.id_comuna = d.id_comuna " +
+            "where sp.id_proveedor = #{idProveedor})")
+    public List<Region> getRegionesSucursales(Integer idProveedor);
+    
+    
+    @Select("select c.id_comuna as idComuna, c.nombre as nombre,r.id_region from comuna c inner join( " +
+            "select distinct c.id_comuna from sucursal_proveedor sp inner join direccion d " +
+            "on sp.id_direccion = d.id_direccion inner join comuna c on c.id_comuna = d.id_comuna " +
+            "where sp.id_proveedor = #{idProveedor})c2 on c.id_comuna=c2.id_comuna " +
+            "inner join region r on r.id_region=c.id_region")
+    @Results({
+            @Result(property = "region.idRegion", column = "id_region", javaType = Region.class, typeHandler = IntegerTypeHandler.class)
+    })
+    public List<Comuna> getComunasSucursales(Integer idProveedor);
     
     /***
      * Encargado de guardar una imagen asociada a beneficio
