@@ -1,6 +1,7 @@
 package cl.bennder.bennderservices.mapper;
 
 import cl.bennder.entitybennderwebrest.model.*;
+import java.util.ArrayList;
 import java.util.Date;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.IntegerTypeHandler;
@@ -377,6 +378,25 @@ public interface BeneficioMapper {
             + "VALUES(#{idBeneficio},#{path},#{orden},#{nombre},#{idImagen})")
     public void guardaImagenBeneficio(BeneficioImagen beneficioImagen);
     
-    
+    /**
+     * Método para obtener la lista de beneficios del proveedor para cargar en la grilla del mantenedor de beneficios
+     * Autor mgutierrez 21-05-2017
+     * @param idProveedor
+     * @return Lista de Beneficios
+     */
+    @Select("SELECT "
+                + "B.ID_BENEFICIO AS idBeneficio, "
+                + "B.TITULO, "
+                + "B.FECHA_INICIAL AS fechaInicial, "
+                + "B.FECHA_EXPIRACION AS fechaExpiracion, "
+                + "B.HABILITADO, "
+                + "P.NOMBRE AS nombreProveedor, "
+                + "C.NOMBRE AS nombreCategoria" +
+            "FROM BENEFICIO B " +
+            "INNER JOIN PROVEEDOR P ON B.ID_PROVEEDOR = P.ID_PROVEEDOR " + 
+            "INNER JOIN CATEGORIA C ON B.ID_CATEGORIA = C.ID_CATEGORIA " +
+            "WHERE P.ID_PROVEEDOR = #{idProSveedor} " +
+            "ORDER BY B.FECHA_CREACION DESC")
+    public List<Beneficio> obtenetListaBeneficiosMantenedor(Integer idProveedor);
     
 }

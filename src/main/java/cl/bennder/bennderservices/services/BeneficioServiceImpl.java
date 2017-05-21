@@ -14,14 +14,15 @@ import cl.bennder.entitybennderwebrest.model.BeneficioImagen;
 import cl.bennder.entitybennderwebrest.model.Categoria;
 import cl.bennder.entitybennderwebrest.model.ImagenGenerica;
 import cl.bennder.entitybennderwebrest.model.Validacion;
+import cl.bennder.entitybennderwebrest.request.CargarMantenedorBeneficioRequest;
 import cl.bennder.entitybennderwebrest.request.GetTodasCategoriaRequest;
 import cl.bennder.entitybennderwebrest.request.InfoBeneficioRequest;
 import cl.bennder.entitybennderwebrest.request.InfoInicioBeneficioRequest;
 import cl.bennder.entitybennderwebrest.request.UploadImagenesGenericaRequest;
+import cl.bennder.entitybennderwebrest.response.CargarMantenedorBeneficioResponse;
 import cl.bennder.entitybennderwebrest.response.GetTodasCategoriaResponse;
 import cl.bennder.entitybennderwebrest.response.InfoBeneficioResponse;
 import cl.bennder.entitybennderwebrest.response.InfoInicioBeneficioResponse;
-import cl.bennder.entitybennderwebrest.response.UploadBeneficioImagenResponse;
 import cl.bennder.entitybennderwebrest.response.UploadImagenesGenericaResponse;
 import cl.bennder.entitybennderwebrest.response.ValidacionResponse;
 import cl.bennder.entitybennderwebrest.utils.UtilsBennder;
@@ -30,8 +31,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -659,7 +658,22 @@ public class BeneficioServiceImpl implements BeneficioService{
         log.info("fin");
         return response;
     }
-    
-    
-    
+
+    @Override
+    public CargarMantenedorBeneficioResponse cargarMantenedorBeneficio(CargarMantenedorBeneficioRequest request) {
+       
+        log.info("inicio");
+        CargarMantenedorBeneficioResponse response = new CargarMantenedorBeneficioResponse();
+        
+        //Obtener proveedor
+        Integer idProveedor = proveedorMapper.getIdProveedorByUser(request.getIdUsuario());
+        log.info("Id de Proveedor {}", idProveedor);
+        
+        //Obtener lista de beneficios
+        response.setListaBeneficios(beneficioMapper.obtenetListaBeneficiosMantenedor(idProveedor));        
+        log.info("Cantidad de Beneficios {}", response.getListaBeneficios().size());
+        
+        log.info("fin");
+        return response;
+    }
 }

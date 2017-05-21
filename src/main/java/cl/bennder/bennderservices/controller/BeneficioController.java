@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import cl.bennder.entitybennderwebrest.request.InfoBeneficioRequest;
 import cl.bennder.entitybennderwebrest.request.InfoInicioBeneficioRequest;
 import cl.bennder.entitybennderwebrest.request.UploadImagenesGenericaRequest;
+import cl.bennder.entitybennderwebrest.request.CargarMantenedorBeneficioRequest;
+import cl.bennder.entitybennderwebrest.response.CargarMantenedorBeneficioResponse;
 import cl.bennder.entitybennderwebrest.response.GetTodasCategoriaResponse;
 import cl.bennder.entitybennderwebrest.response.InfoBeneficioResponse;
 import cl.bennder.entitybennderwebrest.response.InfoInicioBeneficioResponse;
@@ -91,6 +93,20 @@ public class BeneficioController {
         request.setIdUsuario(jwtTokenUtil.getIdUsuarioDesdeRequest(req));
         InfoInicioBeneficioResponse response = beneficioService.getInfoInicioCreaActualizaBeneficio(request);
         log.info("[beneficio/infoCreaActualiza] - fin ");
+        
+        return response;
+    }
+    
+    @RequestMapping(value = "beneficio/cargarMantenedorBeneficio", method = RequestMethod.POST)
+    public @ResponseBody CargarMantenedorBeneficioResponse cargarMantenedorBeneficio(HttpServletRequest req) {
+        log.info("[beneficio/cargarMantenedorBeneficio] - Inicio ");        
+        CargarMantenedorBeneficioRequest request = new CargarMantenedorBeneficioRequest();
+        
+        request.setIdUsuario(jwtTokenUtil.getIdUsuarioDesdeRequest(req));
+        log.info("[beneficio/cargarMantenedorBeneficio] - idUsuario: " + request.getIdUsuario());       
+        
+        CargarMantenedorBeneficioResponse response = beneficioService.cargarMantenedorBeneficio(request);
+        log.info("[beneficio/cargarMantenedorBeneficio] - fin ");
         
         return response;
     }

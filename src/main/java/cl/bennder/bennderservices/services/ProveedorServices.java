@@ -81,4 +81,5 @@ public interface ProveedorServices {
      * @return Ruta del archivo almacenado
      */
     public String guardaImagenSistemaArchivos(byte[] imagen, Integer idProveedor, Integer idMagen,String extension,Integer idBeneficio);
+    
 }

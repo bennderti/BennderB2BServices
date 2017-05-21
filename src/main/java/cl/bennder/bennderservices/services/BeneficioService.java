@@ -7,15 +7,19 @@ package cl.bennder.bennderservices.services;
 
 import cl.bennder.entitybennderwebrest.model.BeneficioImagen;
 import cl.bennder.entitybennderwebrest.model.ImagenGenerica;
+import cl.bennder.entitybennderwebrest.model.Beneficio;
+import cl.bennder.entitybennderwebrest.request.CargarMantenedorBeneficioRequest;
 import cl.bennder.entitybennderwebrest.request.GetTodasCategoriaRequest;
 import cl.bennder.entitybennderwebrest.request.InfoBeneficioRequest;
 import cl.bennder.entitybennderwebrest.request.InfoInicioBeneficioRequest;
 import cl.bennder.entitybennderwebrest.request.UploadImagenesGenericaRequest;
+import cl.bennder.entitybennderwebrest.response.CargarMantenedorBeneficioResponse;
 import cl.bennder.entitybennderwebrest.response.GetTodasCategoriaResponse;
 import cl.bennder.entitybennderwebrest.response.InfoBeneficioResponse;
 import cl.bennder.entitybennderwebrest.response.InfoInicioBeneficioResponse;
 import cl.bennder.entitybennderwebrest.response.UploadImagenesGenericaResponse;
 import cl.bennder.entitybennderwebrest.response.ValidacionResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -76,5 +80,11 @@ public interface BeneficioService {
      */
     public String guardaImagenSistemaArchivos(byte[] imagen, Integer idProveedor, Integer idMagen,String extension,Integer idBeneficio);
     
-    
-}
+    /**
+     * Método para obtener todo lo necesario para cargar el mantenedor de Beneficios
+     * Autor: mgutierrez 21-5-2017
+     * @param request Dentro debe estar el id de usuario
+     * @return el objeto que contiene una lista`para el mantenedor de beneficios
+     */
+    public CargarMantenedorBeneficioResponse cargarMantenedorBeneficio(CargarMantenedorBeneficioRequest request);
+    }
