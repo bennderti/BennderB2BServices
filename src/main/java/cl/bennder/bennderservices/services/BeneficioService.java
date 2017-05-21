@@ -12,6 +12,7 @@ import cl.bennder.entitybennderwebrest.request.CargarMantenedorBeneficioRequest;
 import cl.bennder.entitybennderwebrest.request.GetTodasCategoriaRequest;
 import cl.bennder.entitybennderwebrest.request.InfoBeneficioRequest;
 import cl.bennder.entitybennderwebrest.request.InfoInicioBeneficioRequest;
+import cl.bennder.entitybennderwebrest.request.PublicarBeneficiosRequest;
 import cl.bennder.entitybennderwebrest.request.UploadImagenesGenericaRequest;
 import cl.bennder.entitybennderwebrest.response.CargarMantenedorBeneficioResponse;
 import cl.bennder.entitybennderwebrest.response.GetTodasCategoriaResponse;
@@ -87,4 +88,11 @@ public interface BeneficioService {
      * @return el objeto que contiene una lista`para el mantenedor de beneficios
      */
     public CargarMantenedorBeneficioResponse cargarMantenedorBeneficio(CargarMantenedorBeneficioRequest request);
-    }
+    
+    /**
+     * Método para publicar (habilitar) los beneficios seleccionados en el comparador
+     * @param request
+     * @return 
+     */
+    public ValidacionResponse publicarBeneficios(PublicarBeneficiosRequest request);
+}

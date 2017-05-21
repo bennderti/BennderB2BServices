@@ -20,6 +20,7 @@ import cl.bennder.entitybennderwebrest.request.InfoBeneficioRequest;
 import cl.bennder.entitybennderwebrest.request.InfoInicioBeneficioRequest;
 import cl.bennder.entitybennderwebrest.request.UploadImagenesGenericaRequest;
 import cl.bennder.entitybennderwebrest.request.CargarMantenedorBeneficioRequest;
+import cl.bennder.entitybennderwebrest.request.PublicarBeneficiosRequest;
 import cl.bennder.entitybennderwebrest.response.CargarMantenedorBeneficioResponse;
 import cl.bennder.entitybennderwebrest.response.GetTodasCategoriaResponse;
 import cl.bennder.entitybennderwebrest.response.InfoBeneficioResponse;
@@ -111,5 +112,17 @@ public class BeneficioController {
         return response;
     }
     
-    
+    @RequestMapping(value = "beneficio/publicarBeneficios", method = RequestMethod.POST)
+    public @ResponseBody ValidacionResponse publicarBeneficios(@RequestBody PublicarBeneficiosRequest request, HttpServletRequest httpSerReq) {
+        log.info("[beneficio/cargarMantenedorBeneficio] - Inicio ");      
+        
+        request.setIdUsuario(jwtTokenUtil.getIdUsuarioDesdeRequest(httpSerReq));
+        log.info("[beneficio/cargarMantenedorBeneficio] - idUsuario: " + request.getIdUsuario());
+        
+        ValidacionResponse response = beneficioService.publicarBeneficios(request);
+        
+        log.info("[beneficio/cargarMantenedorBeneficio] - fin ");
+        
+        return response;
+    }   
 }

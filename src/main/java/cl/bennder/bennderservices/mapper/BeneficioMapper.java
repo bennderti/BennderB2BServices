@@ -1,8 +1,6 @@
 package cl.bennder.bennderservices.mapper;
 
 import cl.bennder.entitybennderwebrest.model.*;
-import java.util.ArrayList;
-import java.util.Date;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.IntegerTypeHandler;
 import org.apache.ibatis.type.StringTypeHandler;
@@ -399,4 +397,21 @@ public interface BeneficioMapper {
             "ORDER BY B.FECHA_CREACION DESC")
     public List<Beneficio> obtenetListaBeneficiosMantenedor(Integer idProveedor);
     
+    /**
+     * Método para actualizar la publicaciòn del beneficio.
+     * Autor: mgutierrez 21-05-2017
+     * @param idBeneficio 
+     * @param habilitado 
+     */
+    @Update("UPDATE BENEFICIO SET HABILITADO = #{habilitado} WHERE ID_BENEFICIO = #{idBeneficio}" )
+    public void actualizarPublicacionBeneficio(Integer idBeneficio, Boolean habilitado);
+    
+    /**
+     * Método para guardar log de acciones sobre la tabla beneficio
+     * @param idBeneficio
+     * @param idUsuario
+     * @param accion 
+     */
+    @Insert("INSERT INTO LOG_BENEFICIO (ID_BENEFICIO, ID_USUARIO, ACCION) VALUES (#{idBeneficio}, #{idUsuario}, #{accion})")
+    public void insertarLogBeneficio(Integer idBeneficio, Integer idUsuario, String accion);
 }

@@ -5,6 +5,7 @@
  */
 package cl.bennder.bennderservices.services;
 
+import cl.bennder.bennderservices.constantes.AccionBeneficio;
 import cl.bennder.bennderservices.constantes.TiposBeneficio;
 import cl.bennder.bennderservices.mapper.BeneficioMapper;
 import cl.bennder.bennderservices.mapper.CategoriaMapper;
@@ -18,6 +19,7 @@ import cl.bennder.entitybennderwebrest.request.CargarMantenedorBeneficioRequest;
 import cl.bennder.entitybennderwebrest.request.GetTodasCategoriaRequest;
 import cl.bennder.entitybennderwebrest.request.InfoBeneficioRequest;
 import cl.bennder.entitybennderwebrest.request.InfoInicioBeneficioRequest;
+import cl.bennder.entitybennderwebrest.request.PublicarBeneficiosRequest;
 import cl.bennder.entitybennderwebrest.request.UploadImagenesGenericaRequest;
 import cl.bennder.entitybennderwebrest.response.CargarMantenedorBeneficioResponse;
 import cl.bennder.entitybennderwebrest.response.GetTodasCategoriaResponse;
@@ -676,4 +678,45 @@ public class BeneficioServiceImpl implements BeneficioService{
         log.info("fin");
         return response;
     }
+
+    @Override
+    public ValidacionResponse publicarBeneficios(PublicarBeneficiosRequest request) {
+        log.info("inicio");
+        ValidacionResponse response = new ValidacionResponse();
+        
+        if(request.getListaBeneficios() != null && !request.getListaBeneficios().isEmpty())
+        {
+            log.info("Cantidad de lista de beneficios {}");
+            
+            for (Beneficio beneficio : request.getListaBeneficios())
+            {
+                //UPDATE HABILITADO BENEFICIO                
+                beneficioMapper.actualizarPublicacionBeneficio(beneficio.getIdBeneficio(), beneficio.getHabilitado());
+                log.info("Se modifica publicación del beneficio {} con el valor {}", beneficio.getIdBeneficio(), beneficio.getHabilitado());
+                
+                //INSERT ACCION LOG
+                if(beneficio.getHabilitado())
+                {
+                    beneficioMapper.insertarLogBeneficio(beneficio.getIdBeneficio(), request.getIdUsuario(), AccionBeneficio.PUBLICA_BENEFICIO);
+                    log.info("Se inserta log beneficio con acción: {} por el usuario: {}", AccionBeneficio.PUBLICA_BENEFICIO, request.getIdUsuario());
+                }
+                else{
+                    beneficioMapper.insertarLogBeneficio(beneficio.getIdBeneficio(), request.getIdUsuario(), AccionBeneficio.DESHABILITA_BENEFICIO);
+                    log.info("Se inserta log beneficio con acción: {} por el usuario: {}", AccionBeneficio.DESHABILITA_BENEFICIO, request.getIdUsuario());
+                }                            
+            }
+            
+            response.getValidacion().setMensaje("Se modificaron " + request.getListaBeneficios().size() + "Beneficios");            
+        }
+        else
+        {
+            log.info("Lista de beneficios nula o vacía");
+            response.getValidacion().setMensaje("No se obtuvieron Beneficios a Modificar.");    
+        }
+       
+        log.info("fin");
+        return response; 
+    }
+    
+    
 }
