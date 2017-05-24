@@ -95,4 +95,7 @@ public interface BeneficioService {
      * @return 
      */
     public ValidacionResponse publicarBeneficios(PublicarBeneficiosRequest request);
+    
+    
+    public InfoBeneficioRequest getDatosBeneficio(Integer idBeneficio);
 }

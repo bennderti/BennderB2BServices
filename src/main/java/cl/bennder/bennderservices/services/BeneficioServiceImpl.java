@@ -153,11 +153,11 @@ public class BeneficioServiceImpl implements BeneficioService{
                       bImg.setIdImagen(idImagen);
                       bImg.setPath(path);
                       
-                      if(bImg.getOrden() == null){
-                          log.info("Sin orden definido por tanto se aplica según posición en lista ->{}",i);
+                      //if(bImg.getOrden() == null){
+                         // log.info("Sin orden definido por tanto se aplica según posición en lista ->{}",i);
                           bImg.setOrden(i);
                           i++;
-                      }
+                      //}
                       if(bImg.getNombre() == null || bImg.getNombre() == null){
                           log.info("Sin nombre de imagen",i);
                           datosBeneficioOk = false;
@@ -191,11 +191,11 @@ public class BeneficioServiceImpl implements BeneficioService{
                         log.info("Datos beneficio iamgen a cargar ->{}",imgGenerica.toString());
                         Integer idImagen = beneficioMapper.getSeqIdImagen();
                         bImg  = new BeneficioImagen();                         
-                        if(bImg.getOrden() == null){
-                            log.info("Sin orden definido por tanto se aplica según posición en lista ->{}",i);
+                        //if(bImg.getOrden() == null){
+                            //log.info("Sin orden definido por tanto se aplica según posición en lista ->{}",i);
                             bImg.setOrden(i);
                             i++;
-                        }
+                        //}
                         String[] urls = imgGenerica.getUrlImagen().split("[/]+");
                         bImg.setNombre(urls[urls.length-1]);
 //                        if(bImg.getNombre() == null || imgGenerica.getUrlImagen() == null){
@@ -243,8 +243,7 @@ public class BeneficioServiceImpl implements BeneficioService{
     }
      
      
-
-    @Override
+@Override
     public InfoInicioBeneficioResponse getInfoInicioCreaActualizaBeneficio(InfoInicioBeneficioRequest request) {
        InfoInicioBeneficioResponse response = new InfoInicioBeneficioResponse();
        response.setValidacion(new Validacion("0","1","Problemas al obtener datos para creación/actualización de beneficio"));
@@ -261,6 +260,7 @@ public class BeneficioServiceImpl implements BeneficioService{
                     response.setSucursales(proveedorMapper.getSucursalProveedor(idProveedor));
                     response.setRegionesSucursal(proveedorMapper.getRegionesSucursales(idProveedor));
                     response.setComunasSucursales(proveedorMapper.getComunasSucursales(idProveedor));
+                    
                     if(response.getSucursales()!=null && response.getSucursales().size() > 0){
                         log.info("Generando rutas de imagenes genéricas");
                         //.- recorriendo categoria/subcategorias
@@ -313,9 +313,27 @@ public class BeneficioServiceImpl implements BeneficioService{
                                 }
                             }
                             if(response.getImgenesGenericas()!=null && response.getImgenesGenericas().size() > 0){
-                                log.info("Datos inicio OK");
-                                response.getValidacion().setCodigoNegocio("0");
-                                response.getValidacion().setMensaje("Datos inicio OK");
+                                
+                                if(request.getIdBeneficio()!=null){
+                                    log.info("obteniendo datos de beneficio ->{}",request.getIdBeneficio());
+                                    response.setDatosBeneficio(this.getDatosBeneficio(request.getIdBeneficio()));
+                                    if(response.getDatosBeneficio()!=null){
+                                        log.info("Datos de beneficio OK");
+                                        response.getValidacion().setCodigoNegocio("0");
+                                        response.getValidacion().setMensaje("Datos de beneficio OK");
+                                    }
+                                    else{
+                                        log.info("Problemas al obtener datos de beneficio");
+                                        response.getValidacion().setCodigoNegocio("5");
+                                        response.getValidacion().setMensaje("Problemas al obtener datos de beneficio");
+                                    }
+                                }
+                                else{
+                                    log.info("Datos inicio OK");
+                                    response.getValidacion().setCodigoNegocio("0");
+                                    response.getValidacion().setMensaje("Datos inicio OK");
+                                }
+                                
                             }
                             else{
                                 log.info("ISin información de imagenes genéricas");
@@ -354,7 +372,6 @@ public class BeneficioServiceImpl implements BeneficioService{
         log.info("fin");
         return response;
     }
-    
 
     @Override
     public UploadImagenesGenericaResponse uploadImagenesGenerica(UploadImagenesGenericaRequest request) {
@@ -474,7 +491,7 @@ public class BeneficioServiceImpl implements BeneficioService{
 
     
     
-    @Override
+   @Override
     public InfoBeneficioResponse guardarBeneficio(InfoBeneficioRequest request) {
        InfoBeneficioResponse response = new InfoBeneficioResponse();
        response.setValidacion(new Validacion("0","1","Problemas al guardar información de beneficios"));
@@ -498,12 +515,12 @@ public class BeneficioServiceImpl implements BeneficioService{
                     if(idProveedor !=null){
                         log.info("{} Validando datos generales...",mensajeLog);
                         if(request.getIdCategoria()!=null && request.getTitulo()!=null && request.getDescripcion() != null
-                           && request.getFechaCreacion()!= null && request.getFechaExpiracion()!=null && request.getStock()!=null  
+                           && request.getFechaInicial()!= null && request.getFechaExpiracion()!=null && request.getStock()!=null  
                            && request.getStock()> 0 && request.getCondiciones()!=null && request.getCondiciones().size() > 0
                            && request.getSucursales()!=null && request.getSucursales().size() > 0 && request.getLimiteStock()!=null  
                            && request.getLimiteStock()> 0 && request.getStock() > request.getLimiteStock()){
                            
-                            Beneficio beneficio = new Beneficio(idBeneficio,request.getTitulo(), request.getDescripcion(), request.getFechaCreacion(), request.getFechaExpiracion(), null, null, null, request.getStock(), idProveedor, request.getIdCategoria(), request.getTipoBeneficio(), request.getLimiteStock(), 0);
+                            Beneficio beneficio = new Beneficio(idBeneficio,request.getTitulo(), request.getDescripcion(), request.getFechaInicial(), request.getFechaExpiracion(), null, null, null, request.getStock(), idProveedor, request.getIdCategoria(), request.getTipoBeneficio(), request.getLimiteStock(), 0,request.isTieneImagenGenerica());
                              if(request.getTipoBeneficio()!=null && request.getTipoBeneficio().getIdTipoBeneficio()!=null
                                && request.getTipoBeneficio().getIdTipoBeneficio() < 3){
                                  
@@ -660,7 +677,6 @@ public class BeneficioServiceImpl implements BeneficioService{
         log.info("fin");
         return response;
     }
-
     @Override
     public CargarMantenedorBeneficioResponse cargarMantenedorBeneficio(CargarMantenedorBeneficioRequest request) {
        
@@ -716,6 +732,25 @@ public class BeneficioServiceImpl implements BeneficioService{
        
         log.info("fin");
         return response; 
+    }
+    @Override
+    public InfoBeneficioRequest getDatosBeneficio(Integer idBeneficio) {
+        log.info("inicio");
+        InfoBeneficioRequest datosBeneficio = new InfoBeneficioRequest();
+        try {
+            
+            
+            
+            
+            
+            
+            
+            
+        } catch (Exception e) {
+            datosBeneficio = null;
+        }
+        log.info("fin");
+        return datosBeneficio;
     }
     
     
