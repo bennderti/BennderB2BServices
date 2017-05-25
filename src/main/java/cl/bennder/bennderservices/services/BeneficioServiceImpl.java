@@ -10,10 +10,13 @@ import cl.bennder.bennderservices.constantes.TiposBeneficio;
 import cl.bennder.bennderservices.mapper.BeneficioMapper;
 import cl.bennder.bennderservices.mapper.CategoriaMapper;
 import cl.bennder.bennderservices.mapper.ProveedorMapper;
+import cl.bennder.bennderservices.util.ImagenUtil;
 import cl.bennder.entitybennderwebrest.model.Beneficio;
 import cl.bennder.entitybennderwebrest.model.BeneficioImagen;
 import cl.bennder.entitybennderwebrest.model.Categoria;
+import cl.bennder.entitybennderwebrest.model.Descuento;
 import cl.bennder.entitybennderwebrest.model.ImagenGenerica;
+import cl.bennder.entitybennderwebrest.model.Producto;
 import cl.bennder.entitybennderwebrest.model.Validacion;
 import cl.bennder.entitybennderwebrest.request.CargarMantenedorBeneficioRequest;
 import cl.bennder.entitybennderwebrest.request.GetTodasCategoriaRequest;
@@ -739,12 +742,41 @@ public class BeneficioServiceImpl implements BeneficioService{
         InfoBeneficioRequest datosBeneficio = new InfoBeneficioRequest();
         try {
             
+            //.- obtener datos generales
+            //.- obtener condiciones
+            //.- obter imagenes
+            log.info("obteniendo datos generales de beneficio ->{}",idBeneficio);
+            Beneficio beneficio = beneficioMapper.obtenerDetalleBeneficio(idBeneficio);
+            datosBeneficio.setTitulo(beneficio.getTitulo());
+            datosBeneficio.setIdBeneficio(idBeneficio);
+            datosBeneficio.setDescripcion(beneficio.getDescripcion());
+            datosBeneficio.setStock(beneficio.getStock());
+            datosBeneficio.setLimiteStock(beneficio.getLimiteStock());
+            //SimpleDateFormat formatoDelTexto = new SimpleDateFormat("yyyy-MM-dd");
+            datosBeneficio.setFechaInicial(beneficio.getFechaInicial());
+            datosBeneficio.setFechaExpiracion(beneficio.getFechaExpiracion());
+            datosBeneficio.setIdSubCategoria(beneficio.getIdCategoria());
+            datosBeneficio.setIdCategoria(categoriaMapper.getCategoriaBySubCat(beneficio.getIdCategoria()).getIdCategoria());
+            //adicionales            
+            if(beneficio.getTipoBeneficio()!=null && beneficio.getTipoBeneficio().getIdTipoBeneficio()!=null && beneficio.getTipoBeneficio().getIdTipoBeneficio().compareTo(TiposBeneficio.PRODUCTO_ADICIONAL) == 0){
+               log.info("obteniendo información adicional...");
+                datosBeneficio.setAdicionales(beneficioMapper.getAdicionales(idBeneficio));
+            }
+            log.info("obteniendo sucursales/condiciones...");
+            datosBeneficio.setSucursales(beneficioMapper.getSucursalesBeneficio(idBeneficio));
+            datosBeneficio.setCondiciones(beneficio.getCondiciones());
+            Descuento d = (Descuento)beneficio;
+            Producto p = (Producto)beneficio;            
+            datosBeneficio.setPorcentajeDescuento(d.getPorcentajeDescuento());
+            datosBeneficio.setPrecioNormal(p.getPrecioNormal());
+            datosBeneficio.setPrecioOferta(p.getPrecioOferta());
+            datosBeneficio.setTipoBeneficio(beneficio.getTipoBeneficio());
+            datosBeneficio.setTieneImagenGenerica(beneficio.isTieneImagenGenerica());       
+            String server = env.getProperty("server");
+            ImagenUtil.setUrlImagenesBenecio(server, beneficio);
+            datosBeneficio.setImagenesBeneficio(beneficio.getImagenesBeneficio());
             
-            
-            
-            
-            
-            
+            log.info("Datos de datosBeneficio ->{}",datosBeneficio.toString());
             
         } catch (Exception e) {
             datosBeneficio = null;

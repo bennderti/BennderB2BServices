@@ -141,6 +141,7 @@ public interface BeneficioMapper {
     List<Beneficio> obtenerBeneficiosPorCategoriaPadre(Integer idCategoriaPadre);
 
     @Select(" SELECT b.id_beneficio AS idBeneficio," +
+            " b.tiene_img_generica as as tieneImagenGenerica," +
             " b.id_beneficio as idBeneficioParaCondiciones," +
             " b.id_beneficio as idBeneficioParaImagenes," +
             " b.titulo, " +
@@ -159,6 +160,7 @@ public interface BeneficioMapper {
             " bp.precio_oferta as precioOferta," +
             " bg.gancho," +
             " p.nombre as nombreProveedor," +
+            " b.id_categoria as idCategoria, "+
             " c.nombre as nombreCategoria" +
             " FROM beneficio b" +
             " INNER JOIN categoria c ON c.id_categoria = b.id_categoria" +
@@ -309,7 +311,7 @@ public interface BeneficioMapper {
     
     @Update("UPDATE beneficio " +
 "   SET id_beneficio=?, id_tipo_beneficio=#{tipoBeneficio.idTipoBeneficio}, id_proveedor=#{idProveedor}, id_categoria=#{idCategoria}, " +
-"       titulo=#{titulo}, descripcion=#{descripcion}, fecha_creacion=#{fechaCreacion}, fecha_expiracion=#{fechaExpiracion}, " +
+"       titulo=#{titulo}, descripcion=#{descripcion}, fecha_inicial=#{fechaInicial}, fecha_expiracion=#{fechaExpiracion}, " +
 "       stock= #{stock}, limite_stock =#{limiteStock}" +
 " WHERE id_beneficio = #{idBeneficio}")
     public void updateDatosGeneralesBeneficio(Beneficio beneficio);
@@ -318,12 +320,12 @@ public interface BeneficioMapper {
     @Insert("INSERT INTO beneficio(" +
 "            id_beneficio, id_tipo_beneficio, id_proveedor, id_categoria, " +
 "            titulo, descripcion, fecha_creacion, fecha_expiracion,  " +
-"            stock,calificacion,visitas_general,limite_stock,habilitado)" +
+"            stock,calificacion,visitas_general,limite_stock,habilitado,fecha_inicial)" +
 "    VALUES (#{idBeneficio}, #{tipoBeneficio.idTipoBeneficio}, #{idProveedor}, #{idCategoria}," +
-"            #{titulo}, #{descripcion}, #{fechaCreacion}, #{fechaExpiracion}, " +
-"             #{stock},0,0,#{limiteStock},false)")
+"            #{titulo}, #{descripcion}, now(), #{fechaExpiracion}, " +
+"             #{stock},0,0,#{limiteStock},false,#{fechaInicial})")
     public void insertDatosGeneralesBeneficio(Beneficio beneficio);
-    
+  
     @Update("update beneficio_descuento set porcentaje_descuento = #{porcentaje} where id_beneficio = #{idBeneficio}")
     public void updateBeneficioDescuento(@Param("porcentaje") Integer porcentaje,@Param("idBeneficio") Integer idBeneficio);
     
@@ -414,4 +416,12 @@ public interface BeneficioMapper {
      */
     @Insert("INSERT INTO LOG_BENEFICIO (ID_BENEFICIO, ID_USUARIO, ACCION) VALUES (#{idBeneficio}, #{idUsuario}, #{accion})")
     public void insertarLogBeneficio(Integer idBeneficio, Integer idUsuario, String accion);
+    
+    
+    @Select("select gancho from beneficio_gancho where id_beneficio = #{idBeneficio}")
+    public List<String> getAdicionales(Integer idBeneficio);
+    
+    @Select("select id_sucursal from sucursal_beneficio where id_beneficio = #{idBeneficio}")
+    public List<Integer> getSucursalesBeneficio(Integer idBeneficio);
+    
 }
