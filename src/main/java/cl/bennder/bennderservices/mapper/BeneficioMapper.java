@@ -141,7 +141,7 @@ public interface BeneficioMapper {
     List<Beneficio> obtenerBeneficiosPorCategoriaPadre(Integer idCategoriaPadre);
 
     @Select(" SELECT b.id_beneficio AS idBeneficio," +
-            " b.tiene_img_generica as as tieneImagenGenerica," +
+            " b.tiene_img_generica as tieneImagenGenerica," +
             " b.id_beneficio as idBeneficioParaCondiciones," +
             " b.id_beneficio as idBeneficioParaImagenes," +
             " b.titulo, " +

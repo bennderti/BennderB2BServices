@@ -319,8 +319,23 @@ public class BeneficioServiceImpl implements BeneficioService{
                                 
                                 if(request.getIdBeneficio()!=null){
                                     log.info("obteniendo datos de beneficio ->{}",request.getIdBeneficio());
-                                    response.setDatosBeneficio(this.getDatosBeneficio(request.getIdBeneficio()));
-                                    if(response.getDatosBeneficio()!=null){
+                                    response.setDatosBeneficio(this.getDatosBeneficio(request.getIdBeneficio()));                                    
+                                    if(response.getDatosBeneficio()!=null){                                        
+                                        List<Categoria> subcatsBeneficio = categoriaMapper.obtenerSubCategorias(response.getDatosBeneficio().getIdSubCategoria());
+                                        //.- seteo de subcategorias
+                                        if(response.getCategorias()!=null && response.getCategorias().size()>0){
+                                            for(Categoria c : response.getCategorias()){
+                                                if(c.getIdCategoria().compareTo(response.getDatosBeneficio().getIdCategoria()) == 0){
+                                                    c.setSubCategorias(subcatsBeneficio);
+                                                    log.info("sub categorias encontradas de beneficio ->{}",request.getIdBeneficio());
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        
+                                        
+                                        
+                                        
                                         log.info("Datos de beneficio OK");
                                         response.getValidacion().setCodigoNegocio("0");
                                         response.getValidacion().setMensaje("Datos de beneficio OK");
@@ -765,21 +780,31 @@ public class BeneficioServiceImpl implements BeneficioService{
             log.info("obteniendo sucursales/condiciones...");
             datosBeneficio.setSucursales(beneficioMapper.getSucursalesBeneficio(idBeneficio));
             datosBeneficio.setCondiciones(beneficio.getCondiciones());
-            Descuento d = (Descuento)beneficio;
-            Producto p = (Producto)beneficio;            
-            datosBeneficio.setPorcentajeDescuento(d.getPorcentajeDescuento());
-            datosBeneficio.setPrecioNormal(p.getPrecioNormal());
-            datosBeneficio.setPrecioOferta(p.getPrecioOferta());
+            if(beneficio instanceof Descuento){
+                log.info("tipo descuento...");
+                Descuento d = (Descuento)beneficio;
+                datosBeneficio.setPorcentajeDescuento(d.getPorcentajeDescuento());
+            }
+            if(beneficio instanceof Producto ){
+                log.info("tipo producto...");
+                Producto p = (Producto)beneficio;
+                datosBeneficio.setPrecioNormal(p.getPrecioNormal());
+                datosBeneficio.setPrecioOferta(p.getPrecioOferta());
+            }
+            
             datosBeneficio.setTipoBeneficio(beneficio.getTipoBeneficio());
             datosBeneficio.setTieneImagenGenerica(beneficio.isTieneImagenGenerica());       
             String server = env.getProperty("server");
             ImagenUtil.setUrlImagenesBenecio(server, beneficio);
             datosBeneficio.setImagenesBeneficio(beneficio.getImagenesBeneficio());
             
+            
+            
             log.info("Datos de datosBeneficio ->{}",datosBeneficio.toString());
             
         } catch (Exception e) {
             datosBeneficio = null;
+            log.error("Error exception",e);
         }
         log.info("fin");
         return datosBeneficio;
