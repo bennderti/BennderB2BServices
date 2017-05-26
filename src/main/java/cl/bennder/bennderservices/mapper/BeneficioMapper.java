@@ -310,7 +310,7 @@ public interface BeneficioMapper {
     
     
     @Update("UPDATE beneficio " +
-"   SET id_beneficio=?, id_tipo_beneficio=#{tipoBeneficio.idTipoBeneficio}, id_proveedor=#{idProveedor}, id_categoria=#{idCategoria}, " +
+"   SET id_tipo_beneficio=#{tipoBeneficio.idTipoBeneficio}, id_proveedor=#{idProveedor}, id_categoria=#{idCategoria}, " +
 "       titulo=#{titulo}, descripcion=#{descripcion}, fecha_inicial=#{fechaInicial}, fecha_expiracion=#{fechaExpiracion}, " +
 "       stock= #{stock}, limite_stock =#{limiteStock}" +
 " WHERE id_beneficio = #{idBeneficio}")
