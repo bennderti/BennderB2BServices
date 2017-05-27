@@ -188,7 +188,7 @@ public interface BeneficioMapper {
     //@Select(" SELECT imagen " +
     @Select(" SELECT path " +
             " FROM beneficio_imagen" +
-            " WHERE id_beneficio = #{idBeneficio}")
+            " WHERE id_beneficio = #{idBeneficio} ORDER BY ORDEN")
     List<BeneficioImagen> obtenerImagenesBeneficio(Integer idBeneficio);
 
     @Select(" SELECT condicion " +
