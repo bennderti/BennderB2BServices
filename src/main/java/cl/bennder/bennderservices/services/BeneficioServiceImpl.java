@@ -11,6 +11,7 @@ import cl.bennder.bennderservices.mapper.BeneficioMapper;
 import cl.bennder.bennderservices.mapper.CategoriaMapper;
 import cl.bennder.bennderservices.mapper.ProveedorMapper;
 import cl.bennder.bennderservices.util.ImagenUtil;
+import cl.bennder.entitybennderwebrest.model.Adicional;
 import cl.bennder.entitybennderwebrest.model.Beneficio;
 import cl.bennder.entitybennderwebrest.model.BeneficioImagen;
 import cl.bennder.entitybennderwebrest.model.Categoria;
@@ -590,10 +591,10 @@ public class BeneficioServiceImpl implements BeneficioService{
                                         }
                                         else if(TiposBeneficio.PRODUCTO_OFERTA.compareTo(request.getTipoBeneficio().getIdTipoBeneficio()) == 0){
 
-                                            if(request.getPrecioNormal()!=null && request.getPrecioNormal() > 0 && 
-                                               request.getPrecioOferta()!=null && request.getPrecioOferta() > 0 &&
+                                            if(request.getPrecioNormal()!=null &&  
+                                               request.getPrecioOferta()!=null && 
                                                request.getPrecioNormal() > request.getPrecioOferta()){
-                                               Integer existeBPrecioNormalOfer = beneficioMapper.existeBeneficioDescuento(idBeneficio);
+                                               Integer existeBPrecioNormalOfer = beneficioMapper.existeBeneficioProducto(idBeneficio);
                                                if(existeBPrecioNormalOfer > 0){
                                                    log.info("{} Actualizando precio oferta/normal ->{}",mensajeLog,idBeneficio);
                                                    beneficioMapper.updateBeneficioProducto(request.getPrecioOferta(), request.getPrecioNormal(), idBeneficio);
@@ -760,10 +761,10 @@ public class BeneficioServiceImpl implements BeneficioService{
             datosBeneficio.setIdSubCategoria(beneficio.getIdCategoria());
             datosBeneficio.setIdCategoria(categoriaMapper.getCategoriaBySubCat(beneficio.getIdCategoria()).getIdCategoria());
             //adicionales            
-            if(beneficio.getTipoBeneficio()!=null && beneficio.getTipoBeneficio().getIdTipoBeneficio()!=null && beneficio.getTipoBeneficio().getIdTipoBeneficio().compareTo(TiposBeneficio.PRODUCTO_ADICIONAL) == 0){
-               log.info("obteniendo información adicional...");
-                datosBeneficio.setAdicionales(beneficioMapper.getAdicionales(idBeneficio));
-            }
+//            if(beneficio.getTipoBeneficio()!=null && beneficio.getTipoBeneficio().getIdTipoBeneficio()!=null && beneficio.getTipoBeneficio().getIdTipoBeneficio().compareTo(TiposBeneficio.PRODUCTO_ADICIONAL) == 0){
+//               log.info("obteniendo información adicional...");
+//                datosBeneficio.setAdicionales(beneficioMapper.getAdicionales(idBeneficio));
+//            }
             log.info("obteniendo sucursales/condiciones...");
             datosBeneficio.setSucursales(beneficioMapper.getSucursalesBeneficio(idBeneficio));
             datosBeneficio.setCondiciones(beneficio.getCondiciones());
@@ -771,12 +772,21 @@ public class BeneficioServiceImpl implements BeneficioService{
                 log.info("tipo descuento...");
                 Descuento d = (Descuento)beneficio;
                 datosBeneficio.setPorcentajeDescuento(d.getPorcentajeDescuento());
+                log.info("d.getPorcentajeDescuento()->{}",d.getPorcentajeDescuento());
             }
             if(beneficio instanceof Producto ){
                 log.info("tipo producto...");
                 Producto p = (Producto)beneficio;
                 datosBeneficio.setPrecioNormal(p.getPrecioNormal());
                 datosBeneficio.setPrecioOferta(p.getPrecioOferta());
+                 log.info("p.getPrecioNormal()->{},p.getPrecioOferta()->{}",p.getPrecioNormal(),p.getPrecioOferta());
+            }
+            if(beneficio instanceof Adicional ){
+                log.info("tipo adicionales...");
+                Adicional a = (Adicional)beneficio;
+                datosBeneficio.setAdicionales(a.getDescripciones());
+                log.info("a.getDescripciones()->{}",a.getDescripciones());
+                
             }
             
             datosBeneficio.setTipoBeneficio(beneficio.getTipoBeneficio());

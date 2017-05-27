@@ -140,7 +140,7 @@ public interface BeneficioMapper {
     })
     List<Beneficio> obtenerBeneficiosPorCategoriaPadre(Integer idCategoriaPadre);
 
-    @Select(" SELECT b.id_beneficio AS idBeneficio," +
+        @Select(" SELECT b.id_beneficio AS idBeneficio," +
             " b.tiene_img_generica as tieneImagenGenerica," +
             " b.id_beneficio as idBeneficioParaCondiciones," +
             " b.id_beneficio as idBeneficioParaImagenes," +
@@ -158,7 +158,6 @@ public interface BeneficioMapper {
             " bd.porcentaje_descuento as porcentajeDescuento," +
             " bp.precio_normal as precioNormal," +
             " bp.precio_oferta as precioOferta," +
-            " bg.gancho," +
             " p.nombre as nombreProveedor," +
             " b.id_categoria as idCategoria, "+
             " c.nombre as nombreCategoria" +
@@ -168,12 +167,12 @@ public interface BeneficioMapper {
             " INNER JOIN proveedor p ON p.id_proveedor = b.id_proveedor" +
             " LEFT JOIN beneficio_descuento bd ON b.id_beneficio = bd.id_beneficio" +
             " LEFT JOIN beneficio_producto bp ON b.id_beneficio = bp.id_beneficio" +
-            " LEFT JOIN beneficio_gancho bg ON b.id_beneficio = bg.id_beneficio " +
             " WHERE b.id_beneficio = #{idBeneficio}")
     @TypeDiscriminator(column = "id_tipo_beneficio",
             cases = {
                     @Case(value = "1", type = Descuento.class),
-                    @Case(value = "2", type = Producto.class)
+                    @Case(value = "2", type = Producto.class),
+                    @Case(value = "3", type = Adicional.class, results = {@Result(property = "descripciones",javaType = List.class,column = "idBeneficio",many =  @Many(select = "getAdicionales"))})
 
             })
     @Results({
@@ -423,5 +422,12 @@ public interface BeneficioMapper {
     
     @Select("select id_sucursal from sucursal_beneficio where id_beneficio = #{idBeneficio}")
     public List<Integer> getSucursalesBeneficio(Integer idBeneficio);
+    
+    
+    @Select("")
+    public Producto getInfoProducto(Integer idBeneficio);
+    
+    @Select("select porcentaje_descuento from beneficio_descuento where id_beneficio = #{idBeneficio}")
+    public Descuento getInfoDescuento(Integer idBeneficio);
     
 }
