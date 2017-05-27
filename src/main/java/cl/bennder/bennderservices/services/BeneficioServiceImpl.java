@@ -190,6 +190,8 @@ public class BeneficioServiceImpl implements BeneficioService{
                     int i = 1;
                     BeneficioImagen bImg = null;
                     //boolean datosBeneficioOk = true;
+                    log.info("Eliminando imagenes anteriores(base datos) de beneficio ->{}",idBeneficio);
+                    beneficioMapper.eliminarImagenesBeneficio(idBeneficio);
                     for(ImagenGenerica imgGenerica : imagenesGenericas){
                         log.info("Datos beneficio iamgen a cargar ->{}",imgGenerica.toString());
                         Integer idImagen = beneficioMapper.getSeqIdImagen();
@@ -315,25 +317,12 @@ public class BeneficioServiceImpl implements BeneficioService{
                                     log.info("No existe directorio para categoria({}) ->{}",c.getIdCategoria(),c.getNombre());
                                 }
                             }
-                            if(response.getImgenesGenericas()!=null && response.getImgenesGenericas().size() > 0){
+//                            if(response.getImgenesGenericas()!=null && response.getImgenesGenericas().size() > 0){
                                 
                                 if(request.getIdBeneficio()!=null){
                                     log.info("obteniendo datos de beneficio ->{}",request.getIdBeneficio());
                                     response.setDatosBeneficio(this.getDatosBeneficio(request.getIdBeneficio()));                                    
-                                    if(response.getDatosBeneficio()!=null){                                        
-//                                        List<Categoria> subcatsBeneficio = categoriaMapper.obtenerSubCategorias(response.getDatosBeneficio().getIdSubCategoria());
-//                                        //.- seteo de subcategorias
-//                                        if(response.getCategorias()!=null && response.getCategorias().size()>0){
-//                                            for(Categoria c : response.getCategorias()){
-//                                                if(c.getIdCategoria().compareTo(response.getDatosBeneficio().getIdCategoria()) == 0){
-//                                                    c.setSubCategorias(subcatsBeneficio);
-//                                                    log.info("sub categorias encontradas de beneficio ->{}",request.getIdBeneficio());
-//                                                    break;
-//                                                }
-//                                            }
-//                                        }
-//                                        
-//                                        
+                                    if(response.getDatosBeneficio()!=null){//                                        
                                         log.info("Datos de beneficio OK");
                                         response.getValidacion().setCodigoNegocio("0");
                                         response.getValidacion().setMensaje("Datos de beneficio OK");
@@ -350,12 +339,12 @@ public class BeneficioServiceImpl implements BeneficioService{
                                     response.getValidacion().setMensaje("Datos inicio OK");
                                 }
                                 
-                            }
-                            else{
-                                log.info("ISin información de imagenes genéricas");
-                                response.getValidacion().setCodigoNegocio("4");
-                                response.getValidacion().setMensaje("Imagenes cargadas correctamente");
-                            }
+//                            }
+//                            else{
+//                                log.info("ISin información de imagenes genéricas");
+//                                response.getValidacion().setCodigoNegocio("4");
+//                                response.getValidacion().setMensaje("Imagenes cargadas correctamente");
+//                            }
                             
                         }
                         else{
@@ -538,7 +527,7 @@ public class BeneficioServiceImpl implements BeneficioService{
                            
                             Beneficio beneficio = new Beneficio(idBeneficio,request.getTitulo(), request.getDescripcion(), request.getFechaInicial(), request.getFechaExpiracion(), null, null, null, request.getStock(), idProveedor, request.getIdCategoria(), request.getTipoBeneficio(), request.getLimiteStock(), 0,request.isTieneImagenGenerica());
                              if(request.getTipoBeneficio()!=null && request.getTipoBeneficio().getIdTipoBeneficio()!=null
-                               && request.getTipoBeneficio().getIdTipoBeneficio() < 3){
+                               && request.getTipoBeneficio().getIdTipoBeneficio() <= 3){
                                  
                                  
 //                                 beneficio.setFechaCreacionSql(new java.sql.Date(request.getFechaCreacion().getTime()));
