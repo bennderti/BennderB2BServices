@@ -389,7 +389,7 @@ public interface BeneficioMapper {
                 + "B.FECHA_EXPIRACION AS fechaExpiracion, "
                 + "B.HABILITADO, "
                 + "P.NOMBRE AS nombreProveedor, "
-                + "C.NOMBRE AS nombreCategoria" +
+                + "C.NOMBRE AS nombreCategoria " +
             "FROM BENEFICIO B " +
             "INNER JOIN PROVEEDOR P ON B.ID_PROVEEDOR = P.ID_PROVEEDOR " + 
             "INNER JOIN CATEGORIA C ON B.ID_CATEGORIA = C.ID_CATEGORIA " +
