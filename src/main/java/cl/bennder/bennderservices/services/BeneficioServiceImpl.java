@@ -10,10 +10,14 @@ import cl.bennder.bennderservices.constantes.TiposBeneficio;
 import cl.bennder.bennderservices.mapper.BeneficioMapper;
 import cl.bennder.bennderservices.mapper.CategoriaMapper;
 import cl.bennder.bennderservices.mapper.ProveedorMapper;
+import cl.bennder.bennderservices.util.ImagenUtil;
+import cl.bennder.entitybennderwebrest.model.Adicional;
 import cl.bennder.entitybennderwebrest.model.Beneficio;
 import cl.bennder.entitybennderwebrest.model.BeneficioImagen;
 import cl.bennder.entitybennderwebrest.model.Categoria;
+import cl.bennder.entitybennderwebrest.model.Descuento;
 import cl.bennder.entitybennderwebrest.model.ImagenGenerica;
+import cl.bennder.entitybennderwebrest.model.Producto;
 import cl.bennder.entitybennderwebrest.model.Validacion;
 import cl.bennder.entitybennderwebrest.request.CargarMantenedorBeneficioRequest;
 import cl.bennder.entitybennderwebrest.request.GetTodasCategoriaRequest;
@@ -153,11 +157,11 @@ public class BeneficioServiceImpl implements BeneficioService{
                       bImg.setIdImagen(idImagen);
                       bImg.setPath(path);
                       
-                      if(bImg.getOrden() == null){
-                          log.info("Sin orden definido por tanto se aplica según posición en lista ->{}",i);
+                      //if(bImg.getOrden() == null){
+                         // log.info("Sin orden definido por tanto se aplica según posición en lista ->{}",i);
                           bImg.setOrden(i);
                           i++;
-                      }
+                      //}
                       if(bImg.getNombre() == null || bImg.getNombre() == null){
                           log.info("Sin nombre de imagen",i);
                           datosBeneficioOk = false;
@@ -187,15 +191,17 @@ public class BeneficioServiceImpl implements BeneficioService{
                     int i = 1;
                     BeneficioImagen bImg = null;
                     //boolean datosBeneficioOk = true;
+                    log.info("Eliminando imagenes anteriores(base datos) de beneficio ->{}",idBeneficio);
+                    beneficioMapper.eliminarImagenesBeneficio(idBeneficio);
                     for(ImagenGenerica imgGenerica : imagenesGenericas){
                         log.info("Datos beneficio iamgen a cargar ->{}",imgGenerica.toString());
                         Integer idImagen = beneficioMapper.getSeqIdImagen();
                         bImg  = new BeneficioImagen();                         
-                        if(bImg.getOrden() == null){
-                            log.info("Sin orden definido por tanto se aplica según posición en lista ->{}",i);
+                        //if(bImg.getOrden() == null){
+                            //log.info("Sin orden definido por tanto se aplica según posición en lista ->{}",i);
                             bImg.setOrden(i);
                             i++;
-                        }
+                        //}
                         String[] urls = imgGenerica.getUrlImagen().split("[/]+");
                         bImg.setNombre(urls[urls.length-1]);
 //                        if(bImg.getNombre() == null || imgGenerica.getUrlImagen() == null){
@@ -243,8 +249,7 @@ public class BeneficioServiceImpl implements BeneficioService{
     }
      
      
-
-    @Override
+@Override
     public InfoInicioBeneficioResponse getInfoInicioCreaActualizaBeneficio(InfoInicioBeneficioRequest request) {
        InfoInicioBeneficioResponse response = new InfoInicioBeneficioResponse();
        response.setValidacion(new Validacion("0","1","Problemas al obtener datos para creación/actualización de beneficio"));
@@ -261,6 +266,7 @@ public class BeneficioServiceImpl implements BeneficioService{
                     response.setSucursales(proveedorMapper.getSucursalProveedor(idProveedor));
                     response.setRegionesSucursal(proveedorMapper.getRegionesSucursales(idProveedor));
                     response.setComunasSucursales(proveedorMapper.getComunasSucursales(idProveedor));
+                    
                     if(response.getSucursales()!=null && response.getSucursales().size() > 0){
                         log.info("Generando rutas de imagenes genéricas");
                         //.- recorriendo categoria/subcategorias
@@ -312,16 +318,34 @@ public class BeneficioServiceImpl implements BeneficioService{
                                     log.info("No existe directorio para categoria({}) ->{}",c.getIdCategoria(),c.getNombre());
                                 }
                             }
-                            if(response.getImgenesGenericas()!=null && response.getImgenesGenericas().size() > 0){
-                                log.info("Datos inicio OK");
-                                response.getValidacion().setCodigoNegocio("0");
-                                response.getValidacion().setMensaje("Datos inicio OK");
-                            }
-                            else{
-                                log.info("ISin información de imagenes genéricas");
-                                response.getValidacion().setCodigoNegocio("4");
-                                response.getValidacion().setMensaje("Imagenes cargadas correctamente");
-                            }
+//                            if(response.getImgenesGenericas()!=null && response.getImgenesGenericas().size() > 0){
+                                
+                                if(request.getIdBeneficio()!=null){
+                                    log.info("obteniendo datos de beneficio ->{}",request.getIdBeneficio());
+                                    response.setDatosBeneficio(this.getDatosBeneficio(request.getIdBeneficio()));                                    
+                                    if(response.getDatosBeneficio()!=null){//                                        
+                                        log.info("Datos de beneficio OK");
+                                        response.getValidacion().setCodigoNegocio("0");
+                                        response.getValidacion().setMensaje("Datos de beneficio OK");
+                                    }
+                                    else{
+                                        log.info("Problemas al obtener datos de beneficio");
+                                        response.getValidacion().setCodigoNegocio("5");
+                                        response.getValidacion().setMensaje("Problemas al obtener datos de beneficio");
+                                    }
+                                }
+                                else{
+                                    log.info("Datos inicio OK");
+                                    response.getValidacion().setCodigoNegocio("0");
+                                    response.getValidacion().setMensaje("Datos inicio OK");
+                                }
+                                
+//                            }
+//                            else{
+//                                log.info("ISin información de imagenes genéricas");
+//                                response.getValidacion().setCodigoNegocio("4");
+//                                response.getValidacion().setMensaje("Imagenes cargadas correctamente");
+//                            }
                             
                         }
                         else{
@@ -354,7 +378,6 @@ public class BeneficioServiceImpl implements BeneficioService{
         log.info("fin");
         return response;
     }
-    
 
     @Override
     public UploadImagenesGenericaResponse uploadImagenesGenerica(UploadImagenesGenericaRequest request) {
@@ -474,7 +497,7 @@ public class BeneficioServiceImpl implements BeneficioService{
 
     
     
-    @Override
+   @Override
     public InfoBeneficioResponse guardarBeneficio(InfoBeneficioRequest request) {
        InfoBeneficioResponse response = new InfoBeneficioResponse();
        response.setValidacion(new Validacion("0","1","Problemas al guardar información de beneficios"));
@@ -498,14 +521,14 @@ public class BeneficioServiceImpl implements BeneficioService{
                     if(idProveedor !=null){
                         log.info("{} Validando datos generales...",mensajeLog);
                         if(request.getIdCategoria()!=null && request.getTitulo()!=null && request.getDescripcion() != null
-                           && request.getFechaCreacion()!= null && request.getFechaExpiracion()!=null && request.getStock()!=null  
+                           && request.getFechaInicial()!= null && request.getFechaExpiracion()!=null && request.getStock()!=null  
                            && request.getStock()> 0 && request.getCondiciones()!=null && request.getCondiciones().size() > 0
                            && request.getSucursales()!=null && request.getSucursales().size() > 0 && request.getLimiteStock()!=null  
                            && request.getLimiteStock()> 0 && request.getStock() > request.getLimiteStock()){
                            
-                            Beneficio beneficio = new Beneficio(idBeneficio,request.getTitulo(), request.getDescripcion(), request.getFechaCreacion(), request.getFechaExpiracion(), null, null, null, request.getStock(), idProveedor, request.getIdCategoria(), request.getTipoBeneficio(), request.getLimiteStock(), 0);
+                            Beneficio beneficio = new Beneficio(idBeneficio,request.getTitulo(), request.getDescripcion(), request.getFechaInicial(), request.getFechaExpiracion(), null, null, null, request.getStock(), idProveedor, request.getIdCategoria(), request.getTipoBeneficio(), request.getLimiteStock(), 0,request.isTieneImagenGenerica());
                              if(request.getTipoBeneficio()!=null && request.getTipoBeneficio().getIdTipoBeneficio()!=null
-                               && request.getTipoBeneficio().getIdTipoBeneficio() < 3){
+                               && request.getTipoBeneficio().getIdTipoBeneficio() <= 3){
                                  
                                  
 //                                 beneficio.setFechaCreacionSql(new java.sql.Date(request.getFechaCreacion().getTime()));
@@ -568,10 +591,10 @@ public class BeneficioServiceImpl implements BeneficioService{
                                         }
                                         else if(TiposBeneficio.PRODUCTO_OFERTA.compareTo(request.getTipoBeneficio().getIdTipoBeneficio()) == 0){
 
-                                            if(request.getPrecioNormal()!=null && request.getPrecioNormal() > 0 && 
-                                               request.getPrecioOferta()!=null && request.getPrecioOferta() > 0 &&
+                                            if(request.getPrecioNormal()!=null &&  
+                                               request.getPrecioOferta()!=null && 
                                                request.getPrecioNormal() > request.getPrecioOferta()){
-                                               Integer existeBPrecioNormalOfer = beneficioMapper.existeBeneficioDescuento(idBeneficio);
+                                               Integer existeBPrecioNormalOfer = beneficioMapper.existeBeneficioProducto(idBeneficio);
                                                if(existeBPrecioNormalOfer > 0){
                                                    log.info("{} Actualizando precio oferta/normal ->{}",mensajeLog,idBeneficio);
                                                    beneficioMapper.updateBeneficioProducto(request.getPrecioOferta(), request.getPrecioNormal(), idBeneficio);
@@ -660,7 +683,6 @@ public class BeneficioServiceImpl implements BeneficioService{
         log.info("fin");
         return response;
     }
-
     @Override
     public CargarMantenedorBeneficioResponse cargarMantenedorBeneficio(CargarMantenedorBeneficioRequest request) {
        
@@ -716,6 +738,73 @@ public class BeneficioServiceImpl implements BeneficioService{
        
         log.info("fin");
         return response; 
+    }
+    @Override
+    public InfoBeneficioRequest getDatosBeneficio(Integer idBeneficio) {
+        log.info("inicio");
+        InfoBeneficioRequest datosBeneficio = new InfoBeneficioRequest();
+        try {
+            
+            //.- obtener datos generales
+            //.- obtener condiciones
+            //.- obter imagenes
+            log.info("obteniendo datos generales de beneficio ->{}",idBeneficio);
+            Beneficio beneficio = beneficioMapper.obtenerDetalleBeneficio(idBeneficio);
+            datosBeneficio.setTitulo(beneficio.getTitulo());
+            datosBeneficio.setIdBeneficio(idBeneficio);
+            datosBeneficio.setDescripcion(beneficio.getDescripcion());
+            datosBeneficio.setStock(beneficio.getStock());
+            datosBeneficio.setLimiteStock(beneficio.getLimiteStock());
+            //SimpleDateFormat formatoDelTexto = new SimpleDateFormat("yyyy-MM-dd");
+            datosBeneficio.setFechaInicial(beneficio.getFechaInicial());
+            datosBeneficio.setFechaExpiracion(beneficio.getFechaExpiracion());
+            datosBeneficio.setIdSubCategoria(beneficio.getIdCategoria());
+            datosBeneficio.setIdCategoria(categoriaMapper.getCategoriaBySubCat(beneficio.getIdCategoria()).getIdCategoria());
+            //adicionales            
+//            if(beneficio.getTipoBeneficio()!=null && beneficio.getTipoBeneficio().getIdTipoBeneficio()!=null && beneficio.getTipoBeneficio().getIdTipoBeneficio().compareTo(TiposBeneficio.PRODUCTO_ADICIONAL) == 0){
+//               log.info("obteniendo información adicional...");
+//                datosBeneficio.setAdicionales(beneficioMapper.getAdicionales(idBeneficio));
+//            }
+            log.info("obteniendo sucursales/condiciones...");
+            datosBeneficio.setSucursales(beneficioMapper.getSucursalesBeneficio(idBeneficio));
+            datosBeneficio.setCondiciones(beneficio.getCondiciones());
+            if(beneficio instanceof Descuento){
+                log.info("tipo descuento...");
+                Descuento d = (Descuento)beneficio;
+                datosBeneficio.setPorcentajeDescuento(d.getPorcentajeDescuento());
+                log.info("d.getPorcentajeDescuento()->{}",d.getPorcentajeDescuento());
+            }
+            if(beneficio instanceof Producto ){
+                log.info("tipo producto...");
+                Producto p = (Producto)beneficio;
+                datosBeneficio.setPrecioNormal(p.getPrecioNormal());
+                datosBeneficio.setPrecioOferta(p.getPrecioOferta());
+                 log.info("p.getPrecioNormal()->{},p.getPrecioOferta()->{}",p.getPrecioNormal(),p.getPrecioOferta());
+            }
+            if(beneficio instanceof Adicional ){
+                log.info("tipo adicionales...");
+                Adicional a = (Adicional)beneficio;
+                datosBeneficio.setAdicionales(a.getDescripciones());
+                log.info("a.getDescripciones()->{}",a.getDescripciones());
+                
+            }
+            
+            datosBeneficio.setTipoBeneficio(beneficio.getTipoBeneficio());
+            datosBeneficio.setTieneImagenGenerica(beneficio.isTieneImagenGenerica());       
+            String server = env.getProperty("server");
+            ImagenUtil.setUrlImagenesBenecio(server, beneficio);
+            datosBeneficio.setImagenesBeneficio(beneficio.getImagenesBeneficio());
+            
+            
+            
+            log.info("Datos de datosBeneficio ->{}",datosBeneficio.toString());
+            
+        } catch (Exception e) {
+            datosBeneficio = null;
+            log.error("Error exception",e);
+        }
+        log.info("fin");
+        return datosBeneficio;
     }
     
     

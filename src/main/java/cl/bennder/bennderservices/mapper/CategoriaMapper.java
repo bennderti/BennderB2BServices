@@ -36,6 +36,8 @@ public interface CategoriaMapper {
     })
     public List<Categoria> obtenerSubCategorias(Integer idCategoriaPadre);
 
-
+    
+    @Select("select id_categoria_padre as idCategoria from categoria where id_categoria=#{idSubCategoria}")
+    public Categoria getCategoriaBySubCat(Integer idSubCategoria);
 
 }

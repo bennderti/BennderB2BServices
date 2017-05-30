@@ -100,8 +100,7 @@ create table PROVEEDOR.BENEFICIO_DESCUENTO (
 /*==============================================================*/
 create table PROVEEDOR.BENEFICIO_GANCHO (
    ID_BENEFICIO         INT4                 not null,
-   GANCHO               VARCHAR(200)         null,
-   constraint PK_BENEFICIO_GANCHO primary key (ID_BENEFICIO)
+   GANCHO               VARCHAR(200)         null
 );
 
 /*==============================================================*/
@@ -480,6 +479,9 @@ CREATE TABLE log_beneficio
         ON DELETE NO ACTION
 );
 	  
+
+
+CREATE INDEX idx_beneficio_gancho ON PROVEEDOR.beneficio_gancho(id_beneficio);
 
 
 

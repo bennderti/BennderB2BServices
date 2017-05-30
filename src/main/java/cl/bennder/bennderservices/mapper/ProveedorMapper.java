@@ -29,9 +29,13 @@ import org.apache.ibatis.type.IntegerTypeHandler;
 public interface ProveedorMapper {
     
     
-    @Select("select sp.id_sucursal as idSucursal,sp.nombre as nombreSucursal,c.id_comuna as idComuna from sucursal_proveedor sp inner join direccion d " +
+    /*@Select("select sp.id_sucursal as idSucursal,sp.nombre as nombreSucursal,c.id_comuna as idComuna from sucursal_proveedor sp inner join direccion d " +
             "on sp.id_direccion = d.id_direccion inner join comuna c on c.id_comuna = d.id_comuna " +
-            "where sp.id_proveedor = #{idProveedor} and sp.habilitado = true")
+            "where sp.id_proveedor = #{idProveedor} and sp.habilitado = true")*/
+    @Select(" select sp.id_sucursal as idSucursal,sp.nombre ||' ('||d.calle||' '||coalesce('Nro. '||d.numero,'s/n')||', '||c.nombre||', '||r.nombre||')' as nombreSucursal,c.id_comuna as idComuna from sucursal_proveedor sp inner join direccion d " +
+            " on sp.id_direccion = d.id_direccion inner join comuna c on c.id_comuna = d.id_comuna " +
+            " inner join region r on r.id_region=c.id_region " +
+            " where sp.id_proveedor = #{idProveedor} and sp.habilitado = true")
     public List<SucursalProveedor> getSucursalProveedor(Integer idProveedor);
     
     @Select("select id_region as idRegion,nombre from region where id_region in( " +
