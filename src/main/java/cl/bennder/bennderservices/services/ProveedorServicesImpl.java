@@ -6,6 +6,7 @@
 package cl.bennder.bennderservices.services;
 
 import cl.bennder.bennderservices.mapper.ProveedorMapper;
+import cl.bennder.bennderservices.util.ImagenUtil;
 import cl.bennder.entitybennderwebrest.model.BeneficioImagen;
 import cl.bennder.entitybennderwebrest.model.Validacion;
 import cl.bennder.entitybennderwebrest.request.CategoriaByIdRequest;
@@ -59,7 +60,7 @@ public class ProveedorServicesImpl implements ProveedorServices{
         BufferedOutputStream stream = null;
         String ruta = null;
         try {            
-            String rutaRaiz = env.getProperty("directorio.imagen.proveedor");
+            String rutaRaiz = ImagenUtil.getValuePropertieOS(env, "directorio.imagen.proveedor");//env.getProperty("directorio.imagen.proveedor");
             log.info("rutaRaiz->{}",rutaRaiz);
             log.info("idMagen->{}",idMagen);
             log.info("extension->{}",extension);
@@ -80,7 +81,7 @@ public class ProveedorServicesImpl implements ProveedorServices{
             stream = new BufferedOutputStream(new FileOutputStream(serverFile));            
             if(stream != null){
                 log.info("Escribiendo imagen correctamente...");
-                String locationServer = env.getProperty("directorio.imagen.location.server");
+                String locationServer = ImagenUtil.getValuePropertieOS(env, "directorio.imagen.location.server");//env.getProperty("directorio.imagen.location.server");
                 log.info("locationServer(handlerLocation)->{}",locationServer);
                 ruta = locationServer  + idProveedor.toString()+ "/" + idBeneficio.toString() + "/" + idMagen.toString()+ "."+extension;
                 //ruta = serverFile.getAbsolutePath();
@@ -122,7 +123,7 @@ public class ProveedorServicesImpl implements ProveedorServices{
                log.info("Eliminando imagenes anteriores(base datos)");
                proveedorMapper.eliminarImagenesBeneficio(idBeneficio);
                log.info("Eliminando imagenes de beneficio del proveedor");
-               String rutaRaiz = env.getProperty("directorio.imagen.proveedor");
+               String rutaRaiz = ImagenUtil.getValuePropertieOS(env, "directorio.imagen.proveedor");//env.getProperty("directorio.imagen.proveedor");
                String directorioBeneficio = rutaRaiz + File.separator + request.getIdProveedor().toString() + File.separator + idBeneficio.toString();
                log.info("Eliminando imagenes directorio de beneficio ->{}",directorioBeneficio);
                UtilsBennder.cleanDirectory(directorioBeneficio, false);
@@ -231,7 +232,7 @@ public class ProveedorServicesImpl implements ProveedorServices{
             if(stream != null){
                 log.info("Escribiendo imagen correctamente...");
                 
-                String locationServer = env.getProperty("directorio.imagen.location.server");
+                String locationServer = ImagenUtil.getValuePropertieOS(env, "directorio.imagen.location.server");//env.getProperty("directorio.imagen.location.server");
                 log.info("locationServer(handlerLocation)->{}",locationServer);
                 ruta = locationServer  + idProveedor.toString()+ "/logo/logo."+extension;
                 //ruta = serverFile.getAbsolutePath();
