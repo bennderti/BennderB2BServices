@@ -134,8 +134,23 @@ public class BeneficioServiceImpl implements BeneficioService{
        response.setValidacion(new Validacion("0","1","Problemas al guardar imagenes"));
        log.info("inicio");
         try {
+            
+            Integer maxImagenes = proveedorMapper.getMaxImagenPlanProveedor(idProveedor);
+            log.info("máximo de imagenes permitidas ->{}",maxImagenes);
+            
             if(beneficioImagenes != null && beneficioImagenes.size() > 0){
                log.info("request.getBeneficioImagenes().size() ->{}",beneficioImagenes.size() );
+               if(beneficioImagenes.size() > maxImagenes){
+                   response.getValidacion().setCodigoNegocio("2");
+                   response.getValidacion().setMensaje("Ud ha no puede cargar más de "+maxImagenes+" configuradas para su comercio (plan básico) al crear/editar promoción.");
+                   log.info("Ud ha no puede cargar más de "+maxImagenes+" configuradas para su comercio (plan básico) al crear/editar promoción.",idBeneficio);
+                   return response;
+               }
+               
+               
+               
+               
+               
                //Integer idBeneficio = beneficioImagenes.get(0).getIdBeneficio();
                log.info("Cargando imagenes a beneficio(id) ->{}",idBeneficio); 
                log.info("Eliminando imagenes anteriores(base datos)");
@@ -188,6 +203,14 @@ public class BeneficioServiceImpl implements BeneficioService{
                 log.info("Validando si se agregaron imagenes genéricas...");
                 if(imagenesGenericas!=null && imagenesGenericas.size() > 0)
                 {
+                    
+                    if(imagenesGenericas.size() > maxImagenes){
+                        response.getValidacion().setCodigoNegocio("2");
+                        response.getValidacion().setMensaje("Ud ha no puede cargar más de "+maxImagenes+" configuradas para su comercio (plan básico) al crear/editar promoción.");
+                        log.info("Ud ha no puede cargar más de "+maxImagenes+" configuradas para su comercio (plan básico) al crear/editar promoción.",idBeneficio);
+                        return response;
+                    }
+                    
                     int i = 1;
                     BeneficioImagen bImg = null;
                     //boolean datosBeneficioOk = true;
@@ -261,6 +284,8 @@ public class BeneficioServiceImpl implements BeneficioService{
                 if(request.getIdUsuario()!=null){
                     Integer idProveedor = proveedorMapper.getIdProveedorByUser(request.getIdUsuario());
                     log.info("idProveedor ->{}",idProveedor);
+                    response.setMaxImagenes(proveedorMapper.getMaxImagenPlanProveedor(idProveedor));
+                    log.info("cantidad maxima de imagenes a cargar ->{}",response.getMaxImagenes());
                     log.info("obteniendo todas las categorias y subcategorias asociadas.");
                     response.setCategorias(categoriaMapper.getAllCategorias());
                     log.info("obteniendo sucursusales del proveedor");

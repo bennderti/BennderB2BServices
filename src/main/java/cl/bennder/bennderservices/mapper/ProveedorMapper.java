@@ -29,6 +29,9 @@ import org.apache.ibatis.type.IntegerTypeHandler;
 public interface ProveedorMapper {
     
     
+    @Select("select maX_imagenes from plan_proveedor where id_plan=(select id_plan from proveedor where id_proveedor= #{idProveedor})")
+    public Integer getMaxImagenPlanProveedor(Integer idProveedor);
+    
     /*@Select("select sp.id_sucursal as idSucursal,sp.nombre as nombreSucursal,c.id_comuna as idComuna from sucursal_proveedor sp inner join direccion d " +
             "on sp.id_direccion = d.id_direccion inner join comuna c on c.id_comuna = d.id_comuna " +
             "where sp.id_proveedor = #{idProveedor} and sp.habilitado = true")*/

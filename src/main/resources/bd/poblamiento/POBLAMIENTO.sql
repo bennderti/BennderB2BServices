@@ -422,7 +422,7 @@ insert into PROVEEDOR.tipo_beneficio values(3,'Adicional');
 /*==============================================================*/
 /* REGIONES    */
 /*==============================================================*/
-insert into PROVEEDOR.PLAN_PROVEEDOR(id_plan,max_imagenes,max_publicaciones) values(1,5,5);
+insert into PROVEEDOR.PLAN_PROVEEDOR(id_plan,max_imagenes,max_publicaciones) values(1,4,5);
 /*==============================================================*/
 /* despues de poblar se agrega clave foranea    */
 /*==============================================================*/
