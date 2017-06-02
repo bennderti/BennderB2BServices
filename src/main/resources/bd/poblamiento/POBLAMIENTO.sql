@@ -412,8 +412,21 @@ INSERT INTO PROVEEDOR.COMUNA(ID_COMUNA,ID_REGION,NOMBRE) VALUES(15202,15,'Genera
 /*==============================================================*/
 /* Tipos de beneficio    */
 /*==============================================================*/
-insert into tipo_beneficio values(1,'Descuento');
-insert into tipo_beneficio values(2,'Oferta');
-insert into tipo_beneficio values(3,'Adicional');
+insert into PROVEEDOR.tipo_beneficio values(1,'Descuento');
+insert into PROVEEDOR.tipo_beneficio values(2,'Oferta');
+insert into PROVEEDOR.tipo_beneficio values(3,'Adicional');
 
 
+
+
+/*==============================================================*/
+/* REGIONES    */
+/*==============================================================*/
+insert into PROVEEDOR.PLAN_PROVEEDOR(id_plan,max_imagenes,max_publicaciones) values(1,5,5);
+/*==============================================================*/
+/* despues de poblar se agrega clave foranea    */
+/*==============================================================*/
+alter table PROVEEDOR.PROVEEDOR
+   add constraint FK_PRO_PLAN foreign key (ID_PLAN)
+      references PROVEEDOR.PLAN_PROVEEDOR (ID_PLAN)
+      on delete restrict on update restrict;

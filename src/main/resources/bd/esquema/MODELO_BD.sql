@@ -56,6 +56,8 @@ drop table if exists PROVEEDOR.USUARIO;
 
 drop table if exists PROVEEDOR.USUARIO_PROVEEDOR;
 
+drop table if exists proveedor.plan_proveedor;
+
 
 
 /*==============================================================*/
@@ -240,6 +242,7 @@ create table PROVEEDOR.PROVEEDOR (
    FECHA_SALIDA         DATE                 null,
    HABILITADO           BOOL                 not null,
    PATH_LOGO            VARCHAR(200)         null,
+   id_plan integer NOT NULL DEFAULT 1,
    constraint PK_PROVEEDOR primary key (ID_PROVEEDOR)
 );
 
@@ -340,6 +343,17 @@ CREATE TABLE PROVEEDOR.PLANTILLA_CORREO
   ASUNTO VARCHAR(100) NOT NULL,
   DESCRIPCION VARCHAR(100) NOT NULL,
   CONSTRAINT pk_plantilla_correo PRIMARY KEY (id_plantilla)
+);
+
+/*==============================================================*/
+/* Table: Define las restricciones según plan contratado por proveedor */
+/*==============================================================*/
+CREATE TABLE proveedor.plan_proveedor
+(
+  id_plan integer NOT NULL,
+  max_imagenes integer,
+  max_publicaciones integer,
+  CONSTRAINT fk_plan_pro PRIMARY KEY (id_plan)
 );
 
 alter table PROVEEDOR.ACCESO_USUARIO
