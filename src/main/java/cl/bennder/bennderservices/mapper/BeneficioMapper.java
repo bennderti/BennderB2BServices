@@ -404,7 +404,7 @@ public interface BeneficioMapper {
      * @param accion 
      */
     @Insert("INSERT INTO LOG_BENEFICIO (ID_BENEFICIO, ID_USUARIO, ACCION) VALUES (#{idBeneficio}, #{idUsuario}, #{accion})")
-    public void insertarLogBeneficio(Integer idBeneficio, Integer idUsuario, String accion);
+    public void insertarLogBeneficio(@Param("idBeneficio") Integer idBeneficio,@Param("idUsuario")  Integer idUsuario,@Param("accion")  String accion);
     
     
     @Select("select gancho from beneficio_gancho where id_beneficio = #{idBeneficio}")
@@ -425,7 +425,7 @@ public interface BeneficioMapper {
      * MG - 05/06/2017
      * @param idProveedor 
      */
-    @Update("UPDATE BENEFICIO SET HABILITADO = 0 WHERE ID_PROVEEDOR = #{idProveedor}")
+    @Update("UPDATE BENEFICIO SET HABILITADO = false WHERE ID_PROVEEDOR = #{idProveedor}")
     public void deshabilitarBeneficios(Integer idProveedor);
     
     /**
@@ -433,6 +433,6 @@ public interface BeneficioMapper {
      * MG - 05/06/2017
      * @param idBeneficio
      */
-    @Update("UPDATE BENEFICIO SET HABILITADO = 1 WHERE ID_BENEFICIO = #{idBeneficio}")
+    @Update("UPDATE BENEFICIO SET HABILITADO = true WHERE ID_BENEFICIO = #{idBeneficio}")
     public void habilitarBeneficio(Integer idBeneficio); 
 }

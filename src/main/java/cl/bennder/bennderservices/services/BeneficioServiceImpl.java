@@ -753,11 +753,11 @@ public class BeneficioServiceImpl implements BeneficioService{
                     beneficioMapper.habilitarBeneficio(idBeneficio);
                     log.info("Se habilita el beneficio id({})", idBeneficio);
                     
-                    beneficioMapper.insertarLogBeneficio(idBeneficio, request.getIdUsuario(), AccionBeneficio.PUBLICA_BENEFICIO);
+                    //beneficioMapper.insertarLogBeneficio(idBeneficio, request.getIdUsuario(), AccionBeneficio.PUBLICA_BENEFICIO);
                 }
                 
                 validacion.setMensaje("Operación realizada con éxito.");
-                ;
+                
             }
             else            
                 validacion.setMensaje("La cantidad de beneficios a publicar supera los permitidos (" + cantMaxBeneficios + ").");               
