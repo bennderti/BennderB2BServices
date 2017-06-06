@@ -6,7 +6,9 @@
 package cl.bennder.bennderservices.services;
 
 import cl.bennder.entitybennderwebrest.request.InfoInicioSucursalRequest;
+import cl.bennder.entitybennderwebrest.request.InfoSucursalRequest;
 import cl.bennder.entitybennderwebrest.response.InfoInicioSucursalResponse;
+import cl.bennder.entitybennderwebrest.response.InfoSucursalResponse;
 
 /**
  *
@@ -15,4 +17,6 @@ import cl.bennder.entitybennderwebrest.response.InfoInicioSucursalResponse;
 public interface SucursalService {
     
     public InfoInicioSucursalResponse getInfoInicioSucursal(InfoInicioSucursalRequest request);
+    
+    public InfoSucursalResponse guardarSucursal(InfoSucursalRequest request);
 }
