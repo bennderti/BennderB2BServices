@@ -50,11 +50,6 @@ public interface BeneficioMapper {
     @Select("select stock from beneficio where id_beneficio= #{idBeneficio}")
     public Integer getStockBeneficio(Integer idBeneficio);
     
-   
-  
-    
-    
-    
     //https://www.postgresql.org/docs/8.1/static/functions-datetime.html 
     /***
      * Valida si cliente ya habia obtenido determinado beneficio dentro de fecha de vigencia
@@ -64,8 +59,7 @@ public interface BeneficioMapper {
      */
     @Select("SELECT COUNT(1) FROM BENEFICIO B INNER JOIN USUARIO_BENEFICIO UB ON UB.ID_BENEFICIO = B.ID_BENEFICIO " +
             "WHERE current_date <=  B.fecha_expiracion AND UB.ID_BENEFICIO = #{b} AND UB.ID_USUARIO = #{u} AND UB.ID_ACCION_BENEFICIO <> 0")
-    public Integer usuarioHaObtenidoCuponbeneficio(@Param("u") Integer idUsuario,@Param("b") Integer idBeneficio);
-    
+    public Integer usuarioHaObtenidoCuponbeneficio(@Param("u") Integer idUsuario,@Param("b") Integer idBeneficio);    
     
     /***
      * Obtiene los beneficios de una categoria seleccionda para el cargador (datos simples)
@@ -293,9 +287,7 @@ public interface BeneficioMapper {
     @Select("SELECT PATH_LOGO FROM PROVEEDOR WHERE ID_PROVEEDOR =( " +
             "SELECT ID_PROVEEDOR FROM BENEFICIO WHERE ID_BENEFICIO = #{idBeneficio} )")
     public String getPathLogoProveedorByBeneficio(Integer idBeneficio);
-    
-    
-    
+
     @Update("UPDATE BENEFICIO SET VISITAS_GENERAL = (SELECT COALESCE(VISITAS_GENERAL,0) + 1 FROM BENEFICIO WHERE ID_BENEFICIO = #{idBeneficio}) " +
             "WHERE ID_BENEFICIO = #{idBeneficio} ")
     public void actualizarVisitasBeneficio(Integer idBeneficio);
@@ -309,20 +301,19 @@ public interface BeneficioMapper {
     
     
     @Update("UPDATE beneficio " +
-"   SET id_tipo_beneficio=#{tipoBeneficio.idTipoBeneficio}, id_proveedor=#{idProveedor}, id_categoria=#{idCategoria}, " +
-"       titulo=#{titulo}, descripcion=#{descripcion}, fecha_inicial=#{fechaInicial}, fecha_expiracion=#{fechaExpiracion}, " +
-"       stock= #{stock}, limite_stock =#{limiteStock}" +
-" WHERE id_beneficio = #{idBeneficio}")
-    public void updateDatosGeneralesBeneficio(Beneficio beneficio);
-    
+            "   SET id_tipo_beneficio=#{tipoBeneficio.idTipoBeneficio}, id_proveedor=#{idProveedor}, id_categoria=#{idCategoria}, " +
+            "       titulo=#{titulo}, descripcion=#{descripcion}, fecha_inicial=#{fechaInicial}, fecha_expiracion=#{fechaExpiracion}, " +
+            "       stock= #{stock}, limite_stock =#{limiteStock}" +
+            " WHERE id_beneficio = #{idBeneficio}")
+    public void updateDatosGeneralesBeneficio(Beneficio beneficio);    
     
     @Insert("INSERT INTO beneficio(" +
-"            id_beneficio, id_tipo_beneficio, id_proveedor, id_categoria, " +
-"            titulo, descripcion, fecha_creacion, fecha_expiracion,  " +
-"            stock,calificacion,visitas_general,limite_stock,habilitado,fecha_inicial)" +
-"    VALUES (#{idBeneficio}, #{tipoBeneficio.idTipoBeneficio}, #{idProveedor}, #{idCategoria}," +
-"            #{titulo}, #{descripcion}, now(), #{fechaExpiracion}, " +
-"             #{stock},0,0,#{limiteStock},false,#{fechaInicial})")
+            "            id_beneficio, id_tipo_beneficio, id_proveedor, id_categoria, " +
+            "            titulo, descripcion, fecha_creacion, fecha_expiracion,  " +
+            "            stock,calificacion,visitas_general,limite_stock,habilitado,fecha_inicial)" +
+            "    VALUES (#{idBeneficio}, #{tipoBeneficio.idTipoBeneficio}, #{idProveedor}, #{idCategoria}," +
+            "            #{titulo}, #{descripcion}, now(), #{fechaExpiracion}, " +
+            "             #{stock},0,0,#{limiteStock},false,#{fechaInicial})")
     public void insertDatosGeneralesBeneficio(Beneficio beneficio);
   
     @Update("update beneficio_descuento set porcentaje_descuento = #{porcentaje} where id_beneficio = #{idBeneficio}")
@@ -363,16 +354,15 @@ public interface BeneficioMapper {
     public void insertSucursal(@Param("idSucursal") Integer idSucursal,@Param("idBeneficio") Integer idBeneficio);
     
     @Delete("DELETE FROM BENEFICIO_IMAGEN WHERE ID_BENEFICIO = #{idBeneficio}")
-    public void eliminarImagenesBeneficio(Integer idBeneficio);
-    
+    public void eliminarImagenesBeneficio(Integer idBeneficio);    
      
     @Select("SELECT nextval('beneficio_imagen_id_imagen_seq')")
     public Integer getSeqIdImagen();
     
-      /***
-     * Encargado de guardar una imagen asociada a beneficio
-     * @param beneficioImagen Datos de imagen asociada a beneficio seleccionado
-     */
+    /***
+    * Encargado de guardar una imagen asociada a beneficio
+    * @param beneficioImagen Datos de imagen asociada a beneficio seleccionado
+    */
     @Insert("INSERT INTO BENEFICIO_IMAGEN(ID_BENEFICIO,PATH,ORDEN,NOMBRE,ID_IMAGEN) "
             + "VALUES(#{idBeneficio},#{path},#{orden},#{nombre},#{idImagen})")
     public void guardaImagenBeneficio(BeneficioImagen beneficioImagen);
@@ -428,6 +418,21 @@ public interface BeneficioMapper {
     public Producto getInfoProducto(Integer idBeneficio);
     
     @Select("select porcentaje_descuento from beneficio_descuento where id_beneficio = #{idBeneficio}")
-    public Descuento getInfoDescuento(Integer idBeneficio);
+    public Descuento getInfoDescuento(Integer idBeneficio); 
     
+    /**
+     * Deshabilita todos los beneficios de un proveedor
+     * MG - 05/06/2017
+     * @param idProveedor 
+     */
+    @Update("UPDATE BENEFICIO SET HABILITADO = 0 WHERE ID_PROVEEDOR = #{idProveedor}")
+    public void deshabilitarBeneficios(Integer idProveedor);
+    
+    /**
+     * Habilita el beneficio indicado
+     * MG - 05/06/2017
+     * @param idBeneficio
+     */
+    @Update("UPDATE BENEFICIO SET HABILITADO = 1 WHERE ID_BENEFICIO = #{idBeneficio}")
+    public void habilitarBeneficio(Integer idBeneficio); 
 }

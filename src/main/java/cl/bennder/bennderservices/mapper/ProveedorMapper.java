@@ -9,6 +9,7 @@ import cl.bennder.entitybennderwebrest.model.BeneficioCargador;
 import cl.bennder.entitybennderwebrest.model.BeneficioImagen;
 import cl.bennder.entitybennderwebrest.model.Categoria;
 import cl.bennder.entitybennderwebrest.model.Comuna;
+import cl.bennder.entitybennderwebrest.model.Descuento;
 import cl.bennder.entitybennderwebrest.model.Proveedor;
 import cl.bennder.entitybennderwebrest.model.Region;
 import cl.bennder.entitybennderwebrest.model.SucursalProveedor;
@@ -130,4 +131,16 @@ public interface ProveedorMapper {
      */
     @Select("select id_proveedor from usuario_proveedor where id_usuario = #{idUsuario}")
     public Integer getIdProveedorByUser(Integer idUsuario);
+    
+    /**
+     * Obtiene la cantidad máxima de publicaciones activas que puede tener el proveedor
+     * MG - 05/06/2017
+     * @param idProveedor
+     * @return 
+     */
+    @Select("SELECT PP.MAX_PUBLICACIONES " +
+            "FROM PROVEEDOR P " +
+            "INNER JOIN PLAN_PROVEEDOR PP ON P.ID_PLAN = PP.ID_PLAN " +
+            "WHERE P.ID_PROVEEDOR = #{idProveedor}")
+    public Integer getCantBeneficiosPublicados(Integer idProveedor);
 }

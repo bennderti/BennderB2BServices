@@ -731,40 +731,45 @@ public class BeneficioServiceImpl implements BeneficioService{
     public ValidacionResponse publicarBeneficios(PublicarBeneficiosRequest request) {
         log.info("inicio");
         ValidacionResponse response = new ValidacionResponse();
+        Validacion validacion = new Validacion();        
         
-        if(request.getListaBeneficios() != null && !request.getListaBeneficios().isEmpty())
+        //Obtener cantidad máxima de beneficios publicados permitidos
+        Integer cantMaxBeneficios = proveedorMapper.getCantBeneficiosPublicados(proveedorMapper.getIdProveedorByUser(request.getIdUsuario()));
+        
+        if(request.getListaIdBeneficios() != null)
         {
-            log.info("Cantidad de lista de beneficios {}");
+            log.info("Cantidad de lista de beneficios {}", request.getListaIdBeneficios().size());
+            log.info("Cantidad máxima de beneficios a publicar {}", cantMaxBeneficios);
             
-            for (Beneficio beneficio : request.getListaBeneficios())
+            if(request.getListaIdBeneficios().size() <= cantMaxBeneficios)
             {
-                //UPDATE HABILITADO BENEFICIO                
-                beneficioMapper.actualizarPublicacionBeneficio(beneficio.getIdBeneficio(), beneficio.getHabilitado());
-                log.info("Se modifica publicación del beneficio {} con el valor {}", beneficio.getIdBeneficio(), beneficio.getHabilitado());
+                //Dejar todos los beneficios habilitado = 0
+                beneficioMapper.deshabilitarBeneficios(cantMaxBeneficios);
+                log.info("Se deshabilitan los beneficios");
                 
-                //INSERT ACCION LOG
-                if(beneficio.getHabilitado())
+                //recorrer lista y habilitar sus beneficios
+                for (Integer idBeneficio : request.getListaIdBeneficios()) 
                 {
-                    beneficioMapper.insertarLogBeneficio(beneficio.getIdBeneficio(), request.getIdUsuario(), AccionBeneficio.PUBLICA_BENEFICIO);
-                    log.info("Se inserta log beneficio con acción: {} por el usuario: {}", AccionBeneficio.PUBLICA_BENEFICIO, request.getIdUsuario());
+                    beneficioMapper.habilitarBeneficio(idBeneficio);
+                    log.info("Se habilita el beneficio id({})", idBeneficio);
+                    
+                    beneficioMapper.insertarLogBeneficio(idBeneficio, request.getIdUsuario(), AccionBeneficio.PUBLICA_BENEFICIO);
                 }
-                else{
-                    beneficioMapper.insertarLogBeneficio(beneficio.getIdBeneficio(), request.getIdUsuario(), AccionBeneficio.DESHABILITA_BENEFICIO);
-                    log.info("Se inserta log beneficio con acción: {} por el usuario: {}", AccionBeneficio.DESHABILITA_BENEFICIO, request.getIdUsuario());
-                }                            
+                
+                validacion.setMensaje("Operación realizada con éxito.");
+                ;
             }
-            
-            response.getValidacion().setMensaje("Se modificaron " + request.getListaBeneficios().size() + "Beneficios");            
+            else            
+                validacion.setMensaje("La cantidad de beneficios a publicar supera los permitidos (" + cantMaxBeneficios + ").");               
         }
         else
-        {
-            log.info("Lista de beneficios nula o vacía");
-            response.getValidacion().setMensaje("No se obtuvieron Beneficios a Modificar.");    
-        }
+            response.getValidacion().setMensaje("No existen beneficios a publicar");
        
+        log.info(validacion.getMensaje());
         log.info("fin");
         return response; 
     }
+    
     @Override
     public InfoBeneficioRequest getDatosBeneficio(Integer idBeneficio) {
         log.info("inicio");
