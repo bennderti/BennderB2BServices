@@ -36,7 +36,7 @@ public interface SucursalMapper {
     public List<Comuna> getComunas();
     
     
-    @Select("select sp.id_sucursal as idSucursal,sp.nombre ,sp.horario_atencion as horarioAtencion,sp.oficina,sp.password_pos as passwordPOS, "
+    @Select("select sp.habilitado,sp.id_sucursal as idSucursal,sp.nombre ,sp.horario_atencion as horarioAtencion,sp.oficina,sp.password_pos as passwordPOS, "
             + "d.id_direccion,d.calle,d.numero,c.id_comuna,r.id_region "
             + "from sucursal_proveedor sp inner join direccion d on sp.id_direccion=d.id_direccion " +
             "inner join comuna c on c.id_comuna=d.id_comuna inner join region r on r.id_region=c.id_region " +
@@ -59,13 +59,13 @@ public interface SucursalMapper {
     public Integer getSeqIdDireccion();
     
     
-    @Insert("insert into sucursal_proveedor(id_proveedor,id_direccion,nombre,horario_atencion,habilitado,password_pos,oficina) "
-            + "values(#{idProveedor},#{s.direccion.idDireccion},#{s.nombre},#{s.horarioAtencion,jdbcType = NULL},true,#{s.passwordPOS},#{s.oficina,jdbcType = NULL})")
+    @Insert("insert into sucursal_proveedor(id_proveedor,id_direccion,nombre,horario_atencion,habilitado,password_pos,oficina,habilitado) "
+            + "values(#{idProveedor},#{s.direccion.idDireccion},#{s.nombre},#{s.horarioAtencion,jdbcType = NULL},true,#{s.passwordPOS},#{s.oficina,jdbcType = NULL},#{habilitado})")
     public void insertSucursal(@Param("idProveedor") Integer idProveedor, @Param("s") Sucursal sucursal);
     
     
     @Update("update sucursal_proveedor set nombre=#{nombre},horario_atencion=#{horarioAtencion,jdbcType = NULL},"
-            + "password_pos = #{passwordPOS}, oficina = #{oficina,jdbcType = NULL} where id_sucursal = #{idSucursal}")
+            + "password_pos = #{passwordPOS}, oficina = #{oficina,jdbcType = NULL},habilitado=#{habilitado} where id_sucursal = #{idSucursal}")
     public void updateSucursal(Sucursal sucursal);
     
     @Insert("insert into direccion(id_direccion,id_comuna,calle,numero) " +
@@ -78,6 +78,10 @@ public interface SucursalMapper {
     public void updateDireccion(Direccion direccion);
     
     
-    
+    @Select("select sp.id_sucursal as idSucursal,sp.nombre ||' ('||d.calle||' '||coalesce('Nro. '||d.numero,'s/n')||', '||c.nombre||', '||r.nombre||')' as nombre,sp.horario_atencion as horarioAtencion,sp.habilitado from sucursal_proveedor sp inner join direccion d " +
+            "on sp.id_direccion = d.id_direccion inner join comuna c on c.id_comuna = d.id_comuna " +
+            "inner join region r on r.id_region=c.id_region " +
+            "where sp.id_proveedor = #{idProveedor}")
+    public List<Sucursal> getTodasSucursales(Integer idProveedor);
     
 }

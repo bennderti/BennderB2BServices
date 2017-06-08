@@ -10,8 +10,10 @@ import cl.bennder.bennderservices.mapper.SucursalMapper;
 import cl.bennder.entitybennderwebrest.model.Validacion;
 import cl.bennder.entitybennderwebrest.request.InfoInicioSucursalRequest;
 import cl.bennder.entitybennderwebrest.request.InfoSucursalRequest;
+import cl.bennder.entitybennderwebrest.request.SucursalesRequest;
 import cl.bennder.entitybennderwebrest.response.InfoInicioSucursalResponse;
 import cl.bennder.entitybennderwebrest.response.InfoSucursalResponse;
+import cl.bennder.entitybennderwebrest.response.SucursalesResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,29 @@ public class SucursalServiceImpl implements SucursalService{
 
     private static final Logger log = LoggerFactory.getLogger(SucursalServiceImpl.class);
 
+    @Override
+    public SucursalesResponse getSucursalesProveedor(SucursalesRequest request) {
+        SucursalesResponse response = new SucursalesResponse();
+        response.setValidacion(new Validacion("0","1","Problemas al obtener sucursales."));
+        log.info("inicio");
+        try {
+            Integer idProveedor = proveedorMapper.getIdProveedorByUser(request.getIdUsuario());
+            log.info("idProveedor->{}",idProveedor);
+            response.setSucursales(sucursalMapper.getTodasSucursales(idProveedor));
+            response.setValidacion(new Validacion("0","0","Sucursales OK."));
+            log.info("iSucursales OK");
+            
+        } catch (Exception e) {
+            response.setValidacion(new Validacion("1","1","Error al obtener sucursales"));
+            log.error("Exception getSucursalesProveedor,",e);
+        }
+        
+        log.info("fin");
+        return response;
+    }
+
+    
+    
     @Override
     public InfoSucursalResponse guardarSucursal(InfoSucursalRequest request) {
         InfoSucursalResponse response = new InfoSucursalResponse();

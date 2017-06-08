@@ -9,8 +9,10 @@ import cl.bennder.bennderservices.security.JwtTokenUtil;
 import cl.bennder.bennderservices.services.SucursalService;
 import cl.bennder.entitybennderwebrest.request.InfoInicioSucursalRequest;
 import cl.bennder.entitybennderwebrest.request.InfoSucursalRequest;
+import cl.bennder.entitybennderwebrest.request.SucursalesRequest;
 import cl.bennder.entitybennderwebrest.response.InfoInicioSucursalResponse;
 import cl.bennder.entitybennderwebrest.response.InfoSucursalResponse;
+import cl.bennder.entitybennderwebrest.response.SucursalesResponse;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +38,16 @@ public class SucursalController {
     @Autowired
     JwtTokenUtil jwtTokenUtil;
     
+    
+    @RequestMapping(value = "sucursal/getTodas",method = RequestMethod.POST)
+    public SucursalesResponse getInfoInicioSucursal(@RequestBody SucursalesRequest request,HttpServletRequest req){
+        log.info("INICIO");
+        request.setIdUsuario(jwtTokenUtil.getIdUsuarioDesdeRequest(req));
+        SucursalesResponse response = sucursalService.getSucursalesProveedor(request);
+        log.info("response ->{}",response.toString());
+        log.info("FIN");
+        return response;
+    }
     
      @RequestMapping(value = "sucursal/getInfoInicio",method = RequestMethod.POST)
     public InfoInicioSucursalResponse getInfoInicioSucursal(@RequestBody InfoInicioSucursalRequest request){
