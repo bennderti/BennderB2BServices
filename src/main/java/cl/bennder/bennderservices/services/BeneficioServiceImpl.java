@@ -730,8 +730,8 @@ public class BeneficioServiceImpl implements BeneficioService{
     @Override
     public ValidacionResponse publicarBeneficios(PublicarBeneficiosRequest request) {
         log.info("inicio");
-        ValidacionResponse response = new ValidacionResponse();
-        Validacion validacion = new Validacion();        
+        ValidacionResponse response = new ValidacionResponse();  
+        response.setValidacion(new Validacion("0","1","Problemas al publicar promociones"));
         
         //Obtener cantidad máxima de beneficios publicados permitidos
         Integer cantMaxBeneficios = proveedorMapper.getCantBeneficiosPublicados(proveedorMapper.getIdProveedorByUser(request.getIdUsuario()));
@@ -755,17 +755,19 @@ public class BeneficioServiceImpl implements BeneficioService{
                     
                     //beneficioMapper.insertarLogBeneficio(idBeneficio, request.getIdUsuario(), AccionBeneficio.PUBLICA_BENEFICIO);
                 }
-                
-                validacion.setMensaje("Operación realizada con éxito.");
+                response.getValidacion().setCodigo("0");
+                response.getValidacion().setMensaje("Operación realizada con éxito.");
                 
             }
-            else            
-                validacion.setMensaje("La cantidad de beneficios a publicar supera los permitidos (" + cantMaxBeneficios + ").");               
+            else   {         
+                response.getValidacion().setMensaje("La cantidad de beneficios a publicar supera los permitidos (" + cantMaxBeneficios + ").");  
+            }
         }
-        else
+        else{
             response.getValidacion().setMensaje("No existen beneficios a publicar");
+        }
        
-        log.info(validacion.getMensaje());
+        log.info(response.getValidacion().getMensaje());
         log.info("fin");
         return response; 
     }
