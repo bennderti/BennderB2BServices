@@ -92,14 +92,16 @@ public class LoginController {
         // Reload password post-security so we can generate token
         final JwtUser userDetails = (JwtUser) userDetailsService.loadUserByUsername(authenticationRequest.getUser());
         final String token = jwtTokenUtil.generateToken(userDetails);
-        log.info("authenticationRequest.getUser() ->{},authenticationRequest.getPassword()->{}",authenticationRequest.getUser(),authenticationRequest.getPassword());
+        //log.info("authenticationRequest.getUser() ->{},authenticationRequest.getPassword()->{}",authenticationRequest.getUser(),authenticationRequest.getPassword());
         authenticationRequest.setPassword(userDetails.getPassword());
         //authenticationRequest.setIdUsuario(userDetails.get);
-        log.info("authenticationRequest.getUser() ->{},authenticationRequest.getPassword()->{}",authenticationRequest.getUser(),authenticationRequest.getPassword());
+        //log.info("authenticationRequest.getUser() ->{},authenticationRequest.getPassword()->{}",authenticationRequest.getUser(),authenticationRequest.getPassword());
         // Return the token
+        log.info("[login] - validando usuario");
         loginResponse = usuarioServices.validacionUsuario(authenticationRequest);
         //loginResponse.setValidacion(new Validacion("0","0","login exitoso"));
         loginResponse.setToken(token);
+        log.info("[login] - fin ");
         return ResponseEntity.ok(loginResponse);
 
         //TODO: Danilo ahi despues agregas la logica que tenias en el antiguo metodo de login.
