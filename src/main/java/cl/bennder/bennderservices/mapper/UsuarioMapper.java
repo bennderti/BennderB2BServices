@@ -96,7 +96,7 @@ public interface UsuarioMapper {
     * @return Usuario 
     * @author mgutierrez
     */
-   @Select("SELECT ID_USUARIO AS IDUSUARIO,HABILITADO AS HABILITADO FROM USUARIO WHERE USUARIO = #{usuario} AND PASSWORD =#{pass}")
+   @Select("SELECT ID_USUARIO AS IDUSUARIO,HABILITADO AS HABILITADO,es_password_temp AS esPasswordTemporal FROM USUARIO WHERE USUARIO = #{usuario} AND PASSWORD =#{pass}")
    public Usuario getUsuarioValidacion(@Param("usuario") String usuario,@Param("pass") String password);
    
    
@@ -118,6 +118,10 @@ public interface UsuarioMapper {
      */
     @Select("SELECT COUNT(1) FROM USUARIO WHERE USUARIO = #{correoUsuario}")
     public Integer existeUsuarioCorreo(String correoUsuario);
+    
+    
+    @Select("select id_usuario from usuario where usuario = #{usuarioCorreo}")
+    public Integer getIdUsuarioByUsuarioCorreo(String usuarioCorreo);
     
     
     /****
@@ -148,4 +152,8 @@ public interface UsuarioMapper {
             " INNER JOIN perfil_usuario pu ON pu.id_perfil = p.id_perfil" +
             " WHERE pu.id_usuario = #{idUsuario}")
     List<Perfil> obtenerPerfilesUsuario(Integer idUsuario);
+    
+    
+    @Update("update usuario set password=#{newPassword},es_password_temp = #{esPasswordTemp} where id_usuario = #{idUsuario}")
+    public void updatePassword(@Param("newPassword") String newPassword,@Param("idUsuario") Integer idUsuario,@Param("esPasswordTemp") boolean  esPasswordTemp);
 }

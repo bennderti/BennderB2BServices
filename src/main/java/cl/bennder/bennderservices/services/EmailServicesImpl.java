@@ -56,6 +56,9 @@ public class EmailServicesImpl implements EmailServices{
     
     @Autowired
     private ParametroSistemaServices parametroSistemaServices;
+    
+    @Autowired
+    private EncriptacionSpringService encriptacionSpringService;
 
     @Override
     public void sendEmail(String to) {
@@ -130,9 +133,13 @@ public class EmailServicesImpl implements EmailServices{
                 if(existeCorreo > 0){
                     if(existeCorreo.equals(1)){
                         //.- se busca contraseña
-                        log.info("{} obtiendo contraseña para comenzar con la creación de correo",existeCorreo);
-                        String password = usuarioMapper.getPasswordByUsuario(request.getUsuarioCorreo());
-                        Validacion v = this.completarEnviarCorreoPassWord(password, request.getUsuarioCorreo(),request.getIndex());
+                        log.info("{} genenrando la contraseña temporal...",existeCorreo);
+                        String passTemp = encriptacionSpringService.generarPasswordTemporal(60);
+                        String passEncode = encriptacionSpringService.passEncoderGenerator(passTemp);
+                        Integer idUsuario = usuarioMapper.getIdUsuarioByUsuarioCorreo(request.getUsuarioCorreo());
+                        log.info("actualizando password temporal para usuario ->{}",idUsuario);
+                        usuarioMapper.updatePassword(passEncode, idUsuario, true);
+                        Validacion v = this.completarEnviarCorreoPassWord(passTemp, request.getUsuarioCorreo(),request.getIndex());
                         response.setValidacion(v);
                     }
                     else{

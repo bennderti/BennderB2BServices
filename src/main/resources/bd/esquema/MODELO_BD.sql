@@ -307,6 +307,7 @@ create table PROVEEDOR.USUARIO (
    APELLIDO_M           VARCHAR(50)          not null,
    FECHA_NACIMIENTO     DATE                 not null,
    HABILITADO           BOOL                 null default FALSE,
+   ES_PASSWORD_TEMP     BOOL                 null default FALSE,
    constraint PK_USUARIO primary key (ID_USUARIO)
 );
 

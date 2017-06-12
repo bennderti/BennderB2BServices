@@ -22,13 +22,15 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import cl.bennder.bennderservices.services.EmailServices;
+import cl.bennder.entitybennderwebrest.request.CambioPasswordRequest;
 import cl.bennder.entitybennderwebrest.request.LoginRequest;
 import cl.bennder.entitybennderwebrest.request.RecuperacionPasswordRequest;
+import cl.bennder.entitybennderwebrest.response.CambioPasswordResponse;
 import cl.bennder.entitybennderwebrest.response.LoginResponse;
 import cl.bennder.entitybennderwebrest.response.ValidacionResponse;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -90,15 +92,26 @@ public class LoginController {
         // Reload password post-security so we can generate token
         final JwtUser userDetails = (JwtUser) userDetailsService.loadUserByUsername(authenticationRequest.getUser());
         final String token = jwtTokenUtil.generateToken(userDetails);
-
+        log.info("authenticationRequest.getUser() ->{},authenticationRequest.getPassword()->{}",authenticationRequest.getUser(),authenticationRequest.getPassword());
+        authenticationRequest.setPassword(userDetails.getPassword());
+        //authenticationRequest.setIdUsuario(userDetails.get);
+        log.info("authenticationRequest.getUser() ->{},authenticationRequest.getPassword()->{}",authenticationRequest.getUser(),authenticationRequest.getPassword());
         // Return the token
-        loginResponse.setValidacion(new Validacion("0","0","login exitoso"));
+        loginResponse = usuarioServices.validacionUsuario(authenticationRequest);
+        //loginResponse.setValidacion(new Validacion("0","0","login exitoso"));
         loginResponse.setToken(token);
         return ResponseEntity.ok(loginResponse);
 
         //TODO: Danilo ahi despues agregas la logica que tenias en el antiguo metodo de login.
     }
-    
+    @RequestMapping(value = "login/cambioPassword", method = RequestMethod.POST)
+    public CambioPasswordResponse cambioPassword(@RequestBody CambioPasswordRequest request,HttpServletRequest req) {
+        log.info("[login/cambioPassword] - inicio ");
+        //request.setIdUsuario(jwtTokenUtil.getIdUsuarioDesdeRequest(req));
+        CambioPasswordResponse response = usuarioServices.cambioPassword(request);
+        log.info("[login/cambioPassword] - fin ");
+        return response;
+    }
      /***
      * Servicio utilizado para enviar contraseña a correo de usuario
      * @param  request Usuario correo destinatario 

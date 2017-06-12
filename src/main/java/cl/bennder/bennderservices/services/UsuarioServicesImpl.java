@@ -9,8 +9,10 @@ import cl.bennder.bennderservices.constantes.CodigoValidacion;
 import cl.bennder.bennderservices.mapper.UsuarioMapper;
 import cl.bennder.entitybennderwebrest.model.Usuario;
 import cl.bennder.entitybennderwebrest.model.Validacion;
+import cl.bennder.entitybennderwebrest.request.CambioPasswordRequest;
 import cl.bennder.entitybennderwebrest.request.GuardarPreferenciasRequest;
 import cl.bennder.entitybennderwebrest.request.LoginRequest;
+import cl.bennder.entitybennderwebrest.response.CambioPasswordResponse;
 import cl.bennder.entitybennderwebrest.response.LoginResponse;
 import cl.bennder.entitybennderwebrest.response.ValidacionResponse;
 
@@ -32,6 +34,9 @@ public class UsuarioServicesImpl implements UsuarioServices{
     
     @Autowired
     private UsuarioMapper usuarioMapper;
+    
+    @Autowired
+    private EncriptacionSpringService encriptacionSpringService;
 
     @Override
     public void registraAccesoUsuario(Integer idUsuario) {
@@ -77,6 +82,7 @@ public class UsuarioServicesImpl implements UsuarioServices{
                             //.- obtener idUSuario(rut usuario sin dv) por usuario
                             response.setIdUsuario(usuario.getIdUsuario());    
                             //response.setIdEstadoUsuario(usuario.getIdEstado());
+                            response.setEsPasswordTemporal(usuario.isEsPasswordTemporal());                                                        
                             response.getValidacion().setCodigo(CodigoValidacion.OK);
                             response.getValidacion().setCodigoNegocio(CodigoValidacion.OK);
                             response.getValidacion().setMensaje("Validación OK");
@@ -127,5 +133,40 @@ public class UsuarioServicesImpl implements UsuarioServices{
         //GuardarPreferenciasCategorias
         return response;
     }
+
+    @Override
+    public CambioPasswordResponse cambioPassword(CambioPasswordRequest request) {
+        CambioPasswordResponse response = new CambioPasswordResponse();
+        response.setValidacion(new Validacion(CodigoValidacion.ERROR_SERVICIO,"0","Problema al cambiar contraseña"));
+        log.info("inicio");
+        try {
+            if(request!=null && request.getNewPassword()!=null && request.getUsuarioCorreo() != null){
+                log.info("generando passencoder y actualizando password para usuario ->{}",request.getUsuarioCorreo());
+                Integer idUsuario = usuarioMapper.getIdUsuarioByUsuarioCorreo(request.getUsuarioCorreo());
+                String passEncode = encriptacionSpringService.passEncoderGenerator(request.getNewPassword());
+                log.info("request.getNewPassword()->{},passEncode->{}",request.getNewPassword(),passEncode);
+                log.info("actualizando password encoder...");
+                usuarioMapper.updatePassword(passEncode, idUsuario, false);
+                response.getValidacion().setCodigo("0");
+                response.getValidacion().setCodigoNegocio("0");
+                response.getValidacion().setMensaje("Cambio de clave OK");
+                log.info("Cambio de clave OK");
+            }
+            else{
+                response.getValidacion().setCodigoNegocio("1");
+                response.getValidacion().setMensaje("Favor completar los datos");
+                log.info("Favor completar los datos");
+            }
+            
+            
+        } catch (Exception e) {
+            log.error("Error en Exception:",e);
+            response.setValidacion(new Validacion(CodigoValidacion.ERROR_SERVICIO, "1","Error al cambiar contraseña"));
+        }
+        
+        log.info("fin");
+        return response;
+    }
+    
     
 }
