@@ -105,7 +105,7 @@ public interface UsuarioMapper {
     * @param idUsuario rut de usuario sin dv
     * @return 
     */
-   @Select("SELECT ID_PROVEEDOR FROM USUARIO_PROVEEDOR WHERE ID_USUARIO =16536869")
+   @Select("SELECT ID_PROVEEDOR FROM USUARIO_PROVEEDOR WHERE ID_USUARIO = #{idUsuario}")
    public Integer getIdProvedorByUsuario(Integer idUsuario);
     
    

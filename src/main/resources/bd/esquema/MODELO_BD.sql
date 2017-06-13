@@ -85,6 +85,7 @@ create table PROVEEDOR.BENEFICIO (
    STOCK                INT4                 not null,
    LIMITE_STOCK         INT4                 null,
    VISITAS_GENERAL      INT4                 null,
+   FECHA_INICIAL        DATE                not null default CURRENT_TIMESTAMP,
    constraint PK_BENEFICIO primary key (ID_BENEFICIO)
 );
 
@@ -163,7 +164,7 @@ create table PROVEEDOR.CONTACTO (
    ID_CONTACTO          SERIAL               not null,
    CELULAR              INT4                 null,
    TELEFONO_FIJO        INT4                 null,
-   CORREO               VARCHAR(30)          null,
+   CORREO               VARCHAR(60)          null,
    constraint PK_CONTACTO primary key (ID_CONTACTO)
 );
 
@@ -301,7 +302,7 @@ create table PROVEEDOR.USUARIO (
    ID_CONTACTO          INT4                 null,
    ID_DIRECCION         INT4                 null,
    USUARIO              VARCHAR(50)          not null,
-   PASSWORD             VARCHAR(50)          not null,
+   PASSWORD             VARCHAR(100)          not null,
    NOMBRES              VARCHAR(50)          not null,
    APELLIDO_P           VARCHAR(50)          not null,
    APELLIDO_M           VARCHAR(50)          not null,
