@@ -430,3 +430,38 @@ alter table PROVEEDOR.PROVEEDOR
    add constraint FK_PRO_PLAN foreign key (ID_PLAN)
       references PROVEEDOR.PLAN_PROVEEDOR (ID_PLAN)
       on delete restrict on update restrict;
+
+
+/*==============================================================*/
+/* Cuentas de Usuario y Proveedor Bennder    */
+/*==============================================================*/
+INSERT INTO PROVEEDOR.PROVEEDOR (NOMBRE, RUT, FECHA_INGRESO, FECHA_SALIDA, HABILITADO, ID_PLAN) VALUES ('Bennder SpA', 76726011, now(), (current_date+ integer '18250'), true, 1);
+
+INSERT INTO PROVEEDOR.CONTACTO (CELULAR, CORREO) VALUES(982456409, 'diego.riveros.pinilla@gmail.com');
+INSERT INTO PROVEEDOR.CONTACTO (CELULAR, CORREO) VALUES(959593485, 'diego.garolla.bugueno@gmail.com'); 
+INSERT INTO PROVEEDOR.CONTACTO (CELULAR, CORREO) VALUES(956283462, 'mario@optimistec.cl'); 
+INSERT INTO PROVEEDOR.CONTACTO (CELULAR, CORREO) VALUES(996782312, 'danilo.yanez.alarcon@gmail.com'); 
+INSERT INTO PROVEEDOR.CONTACTO (CELULAR, CORREO) VALUES(998774487, 'mcos.guti@gmail.com');
+INSERT INTO PROVEEDOR.CONTACTO (CELULAR, CORREO) VALUES(942225743, 'a.moreira.se@gmail.com'); 
+
+INSERT INTO PROVEEDOR.DIRECCION (ID_COMUNA, CALLE, NUMERO, DEPARTAMENTO) VALUES (13101, 'Carmen', '237', '706');
+INSERT INTO PROVEEDOR.DIRECCION (ID_COMUNA, CALLE, NUMERO, DEPARTAMENTO) VALUES (13101, 'Manuel Rodriguez', '53', '106');
+INSERT INTO PROVEEDOR.DIRECCION (ID_COMUNA, CALLE, NUMERO, DEPARTAMENTO) VALUES (13101, 'Sara del Campo', '535', '2006');
+INSERT INTO PROVEEDOR.DIRECCION (ID_COMUNA, CALLE, NUMERO, DEPARTAMENTO) VALUES (13101, 'CARMEN', '110', '1218');
+INSERT INTO PROVEEDOR.DIRECCION (ID_COMUNA, CALLE, NUMERO, DEPARTAMENTO) VALUES (13101, 'CARMEN', '237', '1506');
+INSERT INTO PROVEEDOR.DIRECCION (ID_COMUNA, CALLE, NUMERO) VALUES (13101, 'AV. Alcalde Hernán Prieto', 'Parcela 38/A');
+
+//considerar que el id_direccion debe ser el entregado por el script anterior 
+INSERT INTO PROVEEDOR.USUARIO VALUES (16494662, 1, 1, 'diego.riveros.pinilla@gmail.com', '$2a$06$orcgy0ML3NsOdaittWnSaOG/xEk4W.sgksF035v1PUVx/Ksm9Gom2', 'Diego', 'Riveros', 'Pinilla', '1987-05-28', true, true);
+INSERT INTO PROVEEDOR.USUARIO VALUES (16359872, 2, 2, 'diego.garolla.bugueno@gmail.com', '$2a$06$YRID.I3dVyGb6uNquVRYWebZTsx4eS/Hp6aUoB0iK3.mpZh.oHCxS', 'Diego', 'Garolla', 'Bugueño', '1986-08-15', true, true);
+INSERT INTO PROVEEDOR.USUARIO VALUES (16204842, 3, 3, 'mario@optimistec.cl', '$2a$06$dMtpD5B/U3ICxHfxTPR2M.C.yF5fJB5p4Mv7CrtJZpZ9kQACYzcyG', 'Mario', 'Loyola', 'Díaz', '1987-09-06', true, true);
+INSERT INTO PROVEEDOR.USUARIO VALUES (16536869, 4, 4, 'danilo.yanez.alarcon@gmail.com', '$2a$06$cObfZErRFG.rQHLHn1nfcex4XIqlxzJ/h3B4JyKoEOFioS.u0j5oS', 'Danilo', 'Yañez', 'Alarcón', '1986-12-31', true, true);
+INSERT INTO PROVEEDOR.USUARIO VALUES (16532530, 5, 5, 'mcos.guti@gmail.com', '$2a$06$va9nibpNkLCYK/diMrf8a.M4BbiDpdFgki5uJQoH5p7HONCFcm8Vu', 'Marcos', 'Gutiérrez', 'Sotomayor', '1987-01-07', true, true);
+INSERT INTO PROVEEDOR.USUARIO VALUES (17009949, 6, 6, 'a.moreira.se@gmail.com', '$2a$06$1S0/fyXNkmcP2HDyMZHch.VbRsV9yTUL7EKCiznw7TyFWKQmIB/sW', 'Andrea', 'Moreira', 'Saverino', '1989-06-09', true, true);
+
+INSERT INTO PROVEEDOR.USUARIO_PROVEEDOR VALUES(1,16494662);
+INSERT INTO PROVEEDOR.USUARIO_PROVEEDOR VALUES(1,16359872);  
+INSERT INTO PROVEEDOR.USUARIO_PROVEEDOR VALUES(1,16204842);  
+INSERT INTO PROVEEDOR.USUARIO_PROVEEDOR VALUES(1,16536869);  
+INSERT INTO PROVEEDOR.USUARIO_PROVEEDOR VALUES(1,16532530);  
+INSERT INTO PROVEEDOR.USUARIO_PROVEEDOR VALUES(1,17009949);
