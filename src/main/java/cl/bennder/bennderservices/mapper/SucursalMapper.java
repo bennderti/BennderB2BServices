@@ -59,8 +59,8 @@ public interface SucursalMapper {
     public Integer getSeqIdDireccion();
     
     
-    @Insert("insert into sucursal_proveedor(id_proveedor,id_direccion,nombre,horario_atencion,habilitado,password_pos,oficina,habilitado) "
-            + "values(#{idProveedor},#{s.direccion.idDireccion},#{s.nombre},#{s.horarioAtencion,jdbcType = NULL},true,#{s.passwordPOS},#{s.oficina,jdbcType = NULL},#{s.habilitado})")
+    @Insert("insert into sucursal_proveedor(id_proveedor,id_direccion,nombre,horario_atencion,password_pos,oficina,habilitado) "
+            + "values(#{idProveedor},#{s.direccion.idDireccion},#{s.nombre},#{s.horarioAtencion,jdbcType = NULL},#{s.passwordPOS},#{s.oficina,jdbcType = NULL},#{s.habilitado})")
     public void insertSucursal(@Param("idProveedor") Integer idProveedor, @Param("s") Sucursal sucursal);
     
     
