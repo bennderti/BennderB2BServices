@@ -174,8 +174,8 @@ create table PROVEEDOR.CONTACTO (
 create table PROVEEDOR.DIRECCION (
    ID_DIRECCION         SERIAL               not null,
    ID_COMUNA            INT4                 null,
-   CALLE                VARCHAR(20)          not null,
-   NUMERO               VARCHAR(10)          not null,
+   CALLE                VARCHAR(50)          not null,
+   NUMERO               VARCHAR(20)          not null,
    DEPARTAMENTO         VARCHAR(10)          null,
    VILLA                VARCHAR(20)          null,
    constraint PK_DIRECCION primary key (ID_DIRECCION)
@@ -317,9 +317,9 @@ create table PROVEEDOR.USUARIO (
 /* Table: USUARIO_PROVEEDOR                                     */
 /*==============================================================*/
 create table PROVEEDOR.USUARIO_PROVEEDOR (
-   ID_PROVEEDOR         INT4                 null,
-   ID_USUARIO           INT4                 null,
-   CORREO               VARCHAR(50)          not null
+   ID_PROVEEDOR         INT4                 not null,
+   ID_USUARIO           INT4                 not null,
+   CORREO               VARCHAR(50)          null
 );
 
 /*==============================================================*/
