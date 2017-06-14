@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import javax.annotation.Resource;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,7 @@ public class ProveedorServicesImpl implements ProveedorServices{
     private static final Logger log = LoggerFactory.getLogger(ProveedorServicesImpl.class);
     
         
-    @Autowired
+    @Resource
     private Environment env;
     
     @Autowired
