@@ -8,6 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -20,6 +21,7 @@ import javax.sql.DataSource;
 @Configuration
 @ComponentScan(basePackages = { "cl.bennder.bennderservices" })
 @MapperScan("cl.bennder.bennderservices.mapper")
+@EnableTransactionManagement
 public class WebConfig extends WebMvcConfigurerAdapter{
 
 	@Bean
