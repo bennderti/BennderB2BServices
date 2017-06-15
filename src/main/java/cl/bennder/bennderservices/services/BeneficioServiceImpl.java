@@ -60,8 +60,8 @@ public class BeneficioServiceImpl implements BeneficioService{
     
     private static final Logger log = LoggerFactory.getLogger(BeneficioServiceImpl.class);
     
-//    @Resource
-//    private Environment env;
+    @Resource
+    private Environment env;
     
     @Autowired
     private CategoriaMapper categoriaMapper;
@@ -79,7 +79,7 @@ public class BeneficioServiceImpl implements BeneficioService{
         BufferedOutputStream stream = null;
         String ruta = null;
         try {            
-            String rutaRaiz = PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_PROVEEDOR;//ImagenUtil.getValuePropertieOS(env, "directorio.imagen.proveedor");// env.getProperty("directorio.imagen.proveedor");
+            String rutaRaiz = ImagenUtil.getValuePropertieOS(env, "directorio.imagen.proveedor");//PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_PROVEEDOR;//ImagenUtil.getValuePropertieOS(env, "directorio.imagen.proveedor");// env.getProperty("directorio.imagen.proveedor");
             log.info("rutaRaiz->{}",rutaRaiz);
             log.info("idMagen->{}",idMagen);
             log.info("extension->{}",extension);
@@ -100,7 +100,7 @@ public class BeneficioServiceImpl implements BeneficioService{
             stream = new BufferedOutputStream(new FileOutputStream(serverFile));            
             if(stream != null){
                 log.info("Escribiendo imagen correctamente...");
-                String locationServer = PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_LOCATION_SERVER;//ImagenUtil.getValuePropertieOS(env, "directorio.imagen.location.server");//env.getProperty("directorio.imagen.location.server");
+                String locationServer = ImagenUtil.getValuePropertieOS(env, "directorio.imagen.location.server");//PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_LOCATION_SERVER;//ImagenUtil.getValuePropertieOS(env, "directorio.imagen.location.server");//env.getProperty("directorio.imagen.location.server");
                 log.info("locationServer(handlerLocation)->{}",locationServer);
                 ruta = locationServer  + idProveedor.toString()+ "/" + idBeneficio.toString() + "/" + idMagen.toString()+ "."+extension;
                 //ruta = serverFile.getAbsolutePath();
@@ -158,7 +158,7 @@ public class BeneficioServiceImpl implements BeneficioService{
                log.info("Eliminando imagenes anteriores(base datos)");
                beneficioMapper.eliminarImagenesBeneficio(idBeneficio);
                log.info("Eliminando imagenes de beneficio del proveedor");
-               String rutaRaiz = PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_PROVEEDOR;//ImagenUtil.getValuePropertieOS(env, "directorio.imagen.proveedor");//env.getProperty("directorio.imagen.proveedor");
+               String rutaRaiz = ImagenUtil.getValuePropertieOS(env, "directorio.imagen.proveedor");//PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_PROVEEDOR;//ImagenUtil.getValuePropertieOS(env, "directorio.imagen.proveedor");//env.getProperty("directorio.imagen.proveedor");
                String directorioBeneficio = rutaRaiz + File.separator + idProveedor.toString() + File.separator + idBeneficio.toString();
                log.info("Eliminando imagenes directorio de beneficio ->{}",directorioBeneficio);
                UtilsBennder.cleanDirectory(directorioBeneficio, false);
@@ -235,7 +235,7 @@ public class BeneficioServiceImpl implements BeneficioService{
 //                            break;
 //                        }
 //                        else{
-                            String server = PropertiesDirectorioImagen.SERVER;//env.getProperty("server");
+                            String server = env.getProperty("server");//PropertiesDirectorioImagen.SERVER;//env.getProperty("server");
                             String urlSinServer = imgGenerica.getUrlImagen().replaceAll(server, "");
                             log.info("urlSinServer ->{}",urlSinServer);
                             bImg.setIdBeneficio(idBeneficio);
@@ -302,10 +302,10 @@ public class BeneficioServiceImpl implements BeneficioService{
                         //.si: listamos y guardamos las rutas de imagenes de dicho directorio
                         
                         if(response.getCategorias()!=null && response.getCategorias().size() > 0){
-                            String rutaRaiz = PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_GENERICA_CATEGORIA;//ImagenUtil.getValuePropertieOS(env, "directorio.imagen.generica.categoria");//env.getProperty("directorio.imagen.generica.categoria");
+                            String rutaRaiz = ImagenUtil.getValuePropertieOS(env, "directorio.imagen.generica.categoria");//PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_GENERICA_CATEGORIA;//ImagenUtil.getValuePropertieOS(env, "directorio.imagen.generica.categoria");//env.getProperty("directorio.imagen.generica.categoria");
                             log.info("rutaRaiz de imágenes genéricas de categorias->{}",rutaRaiz);
-                            String server = PropertiesDirectorioImagen.SERVER;//env.getProperty("server");
-                            String locationServer = PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_GENERICA_LOCATION_SERVER;//env.getProperty("directorio.imagen.generica.location.server");
+                            String server = env.getProperty("server");//PropertiesDirectorioImagen.SERVER;//env.getProperty("server");
+                            String locationServer = env.getProperty("directorio.imagen.generica.location.server");//PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_GENERICA_LOCATION_SERVER;//env.getProperty("directorio.imagen.generica.location.server");
                             log.info("server:{},locationServer:{}",server,locationServer);
                             for(Categoria c : response.getCategorias()){
                                 File dirCategoria = new File(rutaRaiz + File.separator + c.getIdCategoria().toString());
@@ -417,7 +417,7 @@ public class BeneficioServiceImpl implements BeneficioService{
                 log.info("Datos de entrada ->{}",request.toString());
                 if(request.getImagenes()!=null && request.getImagenes().size() > 0){
                     log.info("Comenzando a subir imagenes genéricas de cageoria ->{},subcategoria ->{}",request.getImagenes().get(0).getIdCategoria(),request.getImagenes().get(0).getIdSubCategoria());
-                    String rutaRaiz = PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_GENERICA_CATEGORIA;//ImagenUtil.getValuePropertieOS(env, "directorio.imagen.generica.categoria");//env.getProperty("directorio.imagen.generica.categoria");
+                    String rutaRaiz = ImagenUtil.getValuePropertieOS(env, "directorio.imagen.generica.categoria");//PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_GENERICA_CATEGORIA;//ImagenUtil.getValuePropertieOS(env, "directorio.imagen.generica.categoria");//env.getProperty("directorio.imagen.generica.categoria");
                     BufferedOutputStream stream = null;
                     for(ImagenGenerica img : request.getImagenes()){
                         File dirCategoria = new File(rutaRaiz + File.separator + img.getIdCategoria().toString());
@@ -479,7 +479,7 @@ public class BeneficioServiceImpl implements BeneficioService{
         try {
             List<Categoria> categorias = categoriaMapper.getAllCategorias();
             if(categorias!=null && categorias.size() > 0){
-                String rutaRaiz = PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_GENERICA_CATEGORIA;//ImagenUtil.getValuePropertieOS(env, "directorio.imagen.generica.categoria");//env.getProperty("directorio.imagen.generica.categoria");
+                String rutaRaiz = ImagenUtil.getValuePropertieOS(env, "directorio.imagen.generica.categoria");//PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_GENERICA_CATEGORIA;//ImagenUtil.getValuePropertieOS(env, "directorio.imagen.generica.categoria");//env.getProperty("directorio.imagen.generica.categoria");
                 log.info("rutaRaiz de imágenes genéricas de categorias->{}",rutaRaiz);
                 
                 for(Categoria c : categorias){
@@ -826,7 +826,7 @@ public class BeneficioServiceImpl implements BeneficioService{
             
             datosBeneficio.setTipoBeneficio(beneficio.getTipoBeneficio());
             datosBeneficio.setTieneImagenGenerica(beneficio.isTieneImagenGenerica());       
-            String server = PropertiesDirectorioImagen.SERVER;//env.getProperty("server");
+            String server = env.getProperty("server");//PropertiesDirectorioImagen.SERVER;//env.getProperty("server");
             ImagenUtil.setUrlImagenesBenecio(server, beneficio);
             datosBeneficio.setImagenesBeneficio(beneficio.getImagenesBeneficio());
             
