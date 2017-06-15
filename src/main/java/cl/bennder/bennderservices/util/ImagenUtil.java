@@ -33,7 +33,7 @@ public class ImagenUtil {
      * @return 
      */
     public static String getValuePropertieOS(Environment env,String keyPropertie){
-        String os = env.getProperty("os");
+        String os = System.getProperty("os.name");
         log.info("os->{}",os);
         os = os.toLowerCase();
         if(os.contains("windows")){
