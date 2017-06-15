@@ -479,23 +479,21 @@ alter table PROVEEDOR.USUARIO_PROVEEDOR
       references PROVEEDOR.USUARIO (ID_USUARIO)
       on delete restrict on update restrict;
 
-CREATE TABLE log_beneficio
+CREATE TABLE proveedor.log_beneficio
 (
     "ID_BENEFICIO" INT4 NOT NULL,
     "ID_USUARIO" INT4 NOT NULL,
     "FECHA" DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "ACCION" VARCHAR(20) NOT NULL,
     CONSTRAINT "LOG_BENEFICIO_FK1" FOREIGN KEY ("ID_BENEFICIO")
-        REFERENCES beneficio (id_beneficio) MATCH SIMPLE
+        REFERENCES proveedor.beneficio (id_beneficio) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     CONSTRAINT "LOG_BENEFICIO_FK2" FOREIGN KEY ("ID_USUARIO")
-        REFERENCES usuario (id_usuario) MATCH SIMPLE
+        REFERENCES proveedor.usuario (id_usuario) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
-	  
-
 
 CREATE INDEX idx_beneficio_gancho ON PROVEEDOR.beneficio_gancho(id_beneficio);
 
