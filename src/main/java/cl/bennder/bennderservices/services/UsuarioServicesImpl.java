@@ -144,7 +144,7 @@ public class UsuarioServicesImpl implements UsuarioServices{
                 log.info("generando passencoder y actualizando password para usuario ->{}",request.getUsuarioCorreo());
                 Integer idUsuario = usuarioMapper.getIdUsuarioByUsuarioCorreo(request.getUsuarioCorreo());
                 String passEncode = encriptacionSpringService.passEncoderGenerator(request.getNewPassword());
-                log.info("request.getNewPassword()->{},passEncode->{}",request.getNewPassword(),passEncode);
+                log.info("passEncode->{}",request.getNewPassword(),passEncode);
                 log.info("actualizando password encoder...");
                 usuarioMapper.updatePassword(passEncode, idUsuario, false);
                 response.getValidacion().setCodigo("0");
