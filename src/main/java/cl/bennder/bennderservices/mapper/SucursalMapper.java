@@ -26,11 +26,11 @@ import org.apache.ibatis.type.StringTypeHandler;
 public interface SucursalMapper {
     
     
-    @Select("select id_region as idRegion,nombre from region order by 1")
+    @Select("select id_region as idRegion,nombre from region order by nombre")
     public List<Region> getRegiones();
     
     
-    @Select("select id_comuna as idComuna,nombre,id_region from comuna order by 1")
+    @Select("select id_comuna as idComuna,nombre,id_region from comuna order by nombre")
      @Results({
             @Result(property="region.idRegion", column="id_region", javaType = Region.class,typeHandler = IntegerTypeHandler.class)})
     public List<Comuna> getComunas();
