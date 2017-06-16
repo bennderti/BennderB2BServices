@@ -86,6 +86,7 @@ create table PROVEEDOR.BENEFICIO (
    LIMITE_STOCK         INT4                 null,
    VISITAS_GENERAL      INT4                 null,
    FECHA_INICIAL        DATE                not null default CURRENT_TIMESTAMP,
+   TIENE_IMG_GENERICA   BOOL                not null default FALSE ,
    constraint PK_BENEFICIO primary key (ID_BENEFICIO)
 );
 
