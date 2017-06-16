@@ -8,6 +8,7 @@ package cl.bennder.bennderservices.services;
 import cl.bennder.entitybennderwebrest.model.BeneficioImagen;
 import cl.bennder.entitybennderwebrest.model.ImagenGenerica;
 import cl.bennder.entitybennderwebrest.model.Beneficio;
+import cl.bennder.entitybennderwebrest.model.Validacion;
 import cl.bennder.entitybennderwebrest.request.CargarMantenedorBeneficioRequest;
 import cl.bennder.entitybennderwebrest.request.GetTodasCategoriaRequest;
 import cl.bennder.entitybennderwebrest.request.InfoBeneficioRequest;
@@ -98,4 +99,12 @@ public interface BeneficioService {
     
     
     public InfoBeneficioRequest getDatosBeneficio(Integer idBeneficio);
+    
+    
+    /***
+     * valida los datos del beneficio antes de guardar
+     * @param request
+     * @return 
+     */
+    public Validacion validaDatosBeneficio(InfoBeneficioRequest request);
 }
