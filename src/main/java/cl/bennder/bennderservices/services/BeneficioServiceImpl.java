@@ -1005,8 +1005,10 @@ public class BeneficioServiceImpl implements BeneficioService{
         ValidacionResponse response = new ValidacionResponse();  
         response.setValidacion(new Validacion("0","1","Problemas al publicar promociones"));
         
+        Integer idProveedor = proveedorMapper.getIdProveedorByUser(request.getIdUsuario());
+        
         //Obtener cantidad máxima de beneficios publicados permitidos
-        Integer cantMaxBeneficios = proveedorMapper.getCantBeneficiosPublicados(proveedorMapper.getIdProveedorByUser(request.getIdUsuario()));
+        Integer cantMaxBeneficios = proveedorMapper.getCantBeneficiosPublicados(idProveedor);
         
         if(request.getListaIdBeneficios() != null)
         {
@@ -1016,8 +1018,8 @@ public class BeneficioServiceImpl implements BeneficioService{
             if(request.getListaIdBeneficios().size() <= cantMaxBeneficios)
             {
                 //Dejar todos los beneficios habilitado = 0
-                beneficioMapper.deshabilitarBeneficios(cantMaxBeneficios);
-                log.info("Se deshabilitan los beneficios");
+                beneficioMapper.deshabilitarBeneficios(idProveedor);
+                log.info("Se deshabilitan los beneficios con idProveedor {}", idProveedor);
                 
                 //recorrer lista y habilitar sus beneficios
                 for (Integer idBeneficio : request.getListaIdBeneficios()) 
