@@ -65,7 +65,7 @@ drop table if exists proveedor.plan_proveedor;
 /*==============================================================*/
 create table PROVEEDOR.ACCESO_USUARIO (
    ID_USUARIO           INT4                 null,
-   FECHA_ACCESO         DATE                 not null default CURRENT_TIMESTAMP
+   FECHA_ACCESO timestamp without time zone NOT NULL DEFAULT now()
 );
 
 /*==============================================================*/
