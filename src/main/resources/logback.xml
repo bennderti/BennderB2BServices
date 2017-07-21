@@ -9,7 +9,7 @@
     </appender>
 
     <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${WILDFLY_HOME}/standalone/log/bennderB2BRest.log</file>
+        <file>/var/log/wildfly/bennderB2BRest.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <FileNamePattern>bennderB2BRest.%d{yyyy-MM-dd}.%i.log.gz</FileNamePattern>
             <MaxHistory>30</MaxHistory>
