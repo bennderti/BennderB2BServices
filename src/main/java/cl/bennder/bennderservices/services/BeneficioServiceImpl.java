@@ -677,6 +677,15 @@ public class BeneficioServiceImpl implements BeneficioService{
               log.info("fin");
               return validacion; 
         }
+        log.info("{} Validando fecha expiración sea mayor que fecha de inicio...",mensajeLog);
+        
+        if(request.getFechaInicial().getTime() > request.getFechaExpiracion().getTime()){
+              validacion.setCodigoNegocio("19");
+              validacion.setMensaje("Fecha inicial no puede ser mayor que fecha de expiración");
+              log.info("{} {}",validacion.getMensaje(),mensajeLog);
+              log.info("fin");
+              return validacion; 
+        }
         validacion.setCodigoNegocio("0");
         validacion.setMensaje("Validación de datos de beneficio OK");
         log.info("{} {}",validacion.getMensaje(),mensajeLog);
