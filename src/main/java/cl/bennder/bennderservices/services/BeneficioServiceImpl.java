@@ -669,10 +669,20 @@ public class BeneficioServiceImpl implements BeneficioService{
         }
         log.info("{} Validando imágenes privadas o genéricas...",mensajeLog);
         
-        if((request.getImagenesGenericas() == null || request.getImagenesGenericas().isEmpty())&&
-           (request.getImagenesBeneficio() == null || request.getImagenesBeneficio().isEmpty())){
+        if((request.getImagenesGenericas() == null || request.getImagenesGenericas().size() == 0)&&
+           (request.getImagenesBeneficio() == null || request.getImagenesBeneficio().size() == 0)){
               validacion.setCodigoNegocio("18");
               validacion.setMensaje("Favor cargar imágenes genéricas o propias para beneficio");
+              log.info("{} {}",validacion.getMensaje(),mensajeLog);
+              log.info("fin");
+              return validacion; 
+        }
+        log.info("{} Validando cantidad obligatoria de 2 imágenes privadas o genéricas...",mensajeLog);
+        
+        if((request.getImagenesGenericas().size() < 2)&&
+           (request.getImagenesBeneficio().size() < 2)){
+              validacion.setCodigoNegocio("19");
+              validacion.setMensaje("Favor cargar un mínimo de 2 imágenes");
               log.info("{} {}",validacion.getMensaje(),mensajeLog);
               log.info("fin");
               return validacion; 
@@ -680,7 +690,7 @@ public class BeneficioServiceImpl implements BeneficioService{
         log.info("{} Validando fecha expiración sea mayor que fecha de inicio...",mensajeLog);
         
         if(request.getFechaInicial().getTime() > request.getFechaExpiracion().getTime()){
-              validacion.setCodigoNegocio("19");
+              validacion.setCodigoNegocio("20");
               validacion.setMensaje("Fecha inicial no puede ser mayor que fecha de expiración");
               log.info("{} {}",validacion.getMensaje(),mensajeLog);
               log.info("fin");
