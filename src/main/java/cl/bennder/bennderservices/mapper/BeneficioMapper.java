@@ -403,8 +403,8 @@ public interface BeneficioMapper {
      * @param idUsuario
      * @param accion 
      */
-    @Insert("INSERT INTO LOG_BENEFICIO (ID_BENEFICIO, ID_USUARIO, ACCION) VALUES (#{idBeneficio}, #{idUsuario}, #{accion})")
-    public void insertarLogBeneficio(@Param("idBeneficio") Integer idBeneficio,@Param("idUsuario")  Integer idUsuario,@Param("accion")  String accion);
+    @Insert("insert  into log_beneficio(ID_BENEFICIO, ID_USUARIO, ACCION) VALUES (#{idBeneficio}, #{idUsuario}, #{accion})")
+    public Integer insertarLogBeneficio(@Param("idBeneficio") Integer idBeneficio,@Param("idUsuario")  Integer idUsuario,@Param("accion")  String accion);
     
     
     @Select("select gancho from beneficio_gancho where id_beneficio = #{idBeneficio}")

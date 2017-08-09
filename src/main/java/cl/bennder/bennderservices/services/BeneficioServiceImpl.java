@@ -5,7 +5,7 @@
  */
 package cl.bennder.bennderservices.services;
 
-import cl.bennder.bennderservices.constantes.AccionBeneficio;
+import cl.bennder.bennderservices.constantes.MantencionAccionBeneficio;
 import cl.bennder.bennderservices.constantes.PropertiesDirectorioImagen;
 import cl.bennder.bennderservices.constantes.TiposBeneficio;
 import cl.bennder.bennderservices.mapper.BeneficioMapper;
@@ -602,9 +602,9 @@ public class BeneficioServiceImpl implements BeneficioService{
               log.info("fin");
               return validacion;              
          }
-        if(request.getLimiteStock() > request.getStock()){
+        if(request.getLimiteStock() >= request.getStock()){
               validacion.setCodigoNegocio("10");
-              validacion.setMensaje("El límite de stock no puede ser mayor a stock");
+              validacion.setMensaje("El límite de stock no puede ser mayor e igual a stock");
               log.info("{} {}",validacion.getMensaje(),mensajeLog);
               log.info("fin");
               return validacion;              
@@ -696,6 +696,15 @@ public class BeneficioServiceImpl implements BeneficioService{
               log.info("fin");
               return validacion; 
         }
+        log.info("{} Validando selección de sucursales...",mensajeLog);        
+        if(request.getSucursales() == null || request.getSucursales().size() == 0){
+              validacion.setCodigoNegocio("21");
+              validacion.setMensaje("Favor seleccionar por lo menos una sucursal");
+              log.info("{} {}",validacion.getMensaje(),mensajeLog);
+              log.info("fin");
+              return validacion; 
+        }
+        validacion.setCodigo("0");
         validacion.setCodigoNegocio("0");
         validacion.setMensaje("Validación de datos de beneficio OK");
         log.info("{} {}",validacion.getMensaje(),mensajeLog);
@@ -738,12 +747,17 @@ public class BeneficioServiceImpl implements BeneficioService{
                     if(idBeneficio!=null && idBeneficio!=0){
                         log.info("{} Actualizando datos generales de beneficio ->{}.",mensajeLog,idBeneficio);
                         beneficioMapper.updateDatosGeneralesBeneficio(beneficio);
+                        log.info("{} insertando log (edita beneficio).",mensajeLog,idBeneficio);
+                        beneficioMapper.insertarLogBeneficio(idBeneficio, request.getIdUsuario(), MantencionAccionBeneficio.EDITA_BENEFICIO);
                     }
                     else{
                         idBeneficio = beneficioMapper.getSeqIdBeneficio();
                         beneficio.setIdBeneficio(idBeneficio);
                         beneficioMapper.insertDatosGeneralesBeneficio(beneficio);
                         log.info("{} Beneficio en creación ,por tanto se obtiene identificador ->{}.",mensajeLog,idBeneficio);
+                        log.info("{} insertando log (crea beneficio).",mensajeLog,idBeneficio);
+                        beneficioMapper.insertarLogBeneficio(idBeneficio, request.getIdUsuario(), MantencionAccionBeneficio.CREA_BENEFICIO);
+                        
                     }
                     log.info("{} Actualizando condiciones({}) de beneficio->{}",mensajeLog,request.getCondiciones().size(),idBeneficio);
                     beneficioMapper.deleteCondiciones(idBeneficio);
@@ -751,7 +765,7 @@ public class BeneficioServiceImpl implements BeneficioService{
                         beneficioMapper.insertCondiciones(request.getCondiciones().get(i), idBeneficio);
                     }
 
-                    log.info("{} Actualizando sucursales({}) de beneficio->{}",mensajeLog,request.getCondiciones().size(),idBeneficio);
+                    log.info("{} Actualizando sucursales({}) de beneficio->{}",mensajeLog,request.getSucursales().size(),idBeneficio);
                     beneficioMapper.deleteSucursales(idBeneficio);
                     for(int i = 0;i < request.getSucursales().size();i++){
                         beneficioMapper.insertSucursal(request.getSucursales().get(i), idBeneficio);

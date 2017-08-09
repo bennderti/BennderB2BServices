@@ -482,18 +482,16 @@ alter table PROVEEDOR.USUARIO_PROVEEDOR
 
 CREATE TABLE proveedor.log_beneficio
 (
-    "ID_BENEFICIO" INT4 NOT NULL,
-    "ID_USUARIO" INT4 NOT NULL,
-    "FECHA" DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "ACCION" VARCHAR(20) NOT NULL,
-    CONSTRAINT "LOG_BENEFICIO_FK1" FOREIGN KEY ("ID_BENEFICIO")
-        REFERENCES proveedor.beneficio (id_beneficio) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    CONSTRAINT "LOG_BENEFICIO_FK2" FOREIGN KEY ("ID_USUARIO")
-        REFERENCES proveedor.usuario (id_usuario) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+  id_beneficio integer NOT NULL,
+  id_usuario integer NOT NULL,
+  fecha timestamp without time zone NOT NULL DEFAULT now(),
+  accion character varying(25) NOT NULL,
+  CONSTRAINT fk_beneficio_1 FOREIGN KEY (id_beneficio)
+      REFERENCES proveedor.beneficio (id_beneficio) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_usuario FOREIGN KEY (id_usuario)
+      REFERENCES proveedor.usuario (id_usuario) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
 CREATE INDEX idx_beneficio_gancho ON PROVEEDOR.beneficio_gancho(id_beneficio);
