@@ -17,6 +17,7 @@ import cl.bennder.entitybennderwebrest.model.Beneficio;
 import cl.bennder.entitybennderwebrest.model.BeneficioImagen;
 import cl.bennder.entitybennderwebrest.model.Categoria;
 import cl.bennder.entitybennderwebrest.model.Descuento;
+import cl.bennder.entitybennderwebrest.model.ImagenEscalable;
 import cl.bennder.entitybennderwebrest.model.ImagenGenerica;
 import cl.bennder.entitybennderwebrest.model.Producto;
 import cl.bennder.entitybennderwebrest.model.Validacion;
@@ -73,6 +74,21 @@ public class BeneficioServiceImpl implements BeneficioService{
      @Autowired
     private ProveedorMapper proveedorMapper;
 
+    @Override
+    public ImagenEscalable esImagenEscalable(String nombreImagen, List<ImagenEscalable> imagenes) {
+        if(imagenes!=null && imagenes.size()>0){
+            for(ImagenEscalable img:imagenes){
+                if (img.getNombre().compareTo(nombreImagen) == 0){
+                    log.info("La imágene->{} se necesita escalar...",nombreImagen);
+                    return img;
+                }
+            }
+        }
+        
+        return null;
+    }
+
+     
     @Override
     public String guardaImagenSistemaArchivos(byte[] imagen, Integer idProveedor, Integer idMagen, String extension, Integer idBeneficio) {
          log.info("inicio");
@@ -131,7 +147,7 @@ public class BeneficioServiceImpl implements BeneficioService{
      
 
     @Override
-    public ValidacionResponse guardarImagenesBeneficios(List<ImagenGenerica> imagenesGenericas,List<BeneficioImagen> beneficioImagenes, Integer idProveedor, Integer idBeneficio) {
+    public ValidacionResponse guardarImagenesBeneficios(List<ImagenGenerica> imagenesGenericas,List<BeneficioImagen> beneficioImagenes, Integer idProveedor, Integer idBeneficio,List<ImagenEscalable> imagenesEscalables) {
        ValidacionResponse response = new ValidacionResponse();
        response.setValidacion(new Validacion("0","1","Problemas al guardar imagenes"));
        log.info("inicio");
@@ -168,7 +184,23 @@ public class BeneficioServiceImpl implements BeneficioService{
                   log.info("Datos beneficio iamgen a cargar ->{}",bImg.toString());
                   Integer idImagen = beneficioMapper.getSeqIdImagen();
                   String extension = FilenameUtils.getExtension(bImg.getNombre());
-                  String path = this.guardaImagenSistemaArchivos(bImg.getImagen(), idProveedor, idImagen,extension,idBeneficio);
+                  String path = "";
+                  ImagenEscalable imgEscable = esImagenEscalable(bImg.getNombre(), imagenesEscalables);
+                  if(imgEscable != null){
+                      String locationServer = ImagenUtil.getValuePropertieOS(env, "directorio.imagen.location.server");//PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_LOCATION_SERVER;//ImagenUtil.getValuePropertieOS(env, "directorio.imagen.location.server");//env.getProperty("directorio.imagen.location.server");
+                      log.info("locationServer(escalable)->{}",locationServer);                      
+                      //String ruta = locationServer  + idProveedor.toString()+ "/" + idBeneficio.toString() + "/" + idImagen.toString()+ "."+extension;                      
+                      
+                      //String pathTemporal = System.getProperty("java.io.tmpdir")+idBeneficio.toString() + File.pathSeparator +idImagen.toString() + "."+extension;
+                      String pathTemporal = System.getProperty("java.io.tmpdir")+idImagen.toString() + "."+extension;
+                      log.info("Guardando imagen escalada en sistema de archivos ruta temporal->{}",pathTemporal);
+                      path = this.guardaImagenSistemaArchivos(UtilsBennder.resizeImageGetByte(pathTemporal,imgEscable.getAnchoEscalable() , imgEscable.getAltoEscalable(), extension), idProveedor, idImagen,extension,idBeneficio);
+                  }
+                  else{
+                      log.info("Guardando imagen normal en sistema de archivos");
+                      path = this.guardaImagenSistemaArchivos(bImg.getImagen(), idProveedor, idImagen,extension,idBeneficio);
+                  }
+                  log.info("path de imagen sistema archivos->{}",path);
                   if(path != null){  
                       bImg.setIdBeneficio(idBeneficio);
                       bImg.setIdImagen(idImagen);
@@ -772,7 +804,7 @@ public class BeneficioServiceImpl implements BeneficioService{
                     }
 
                     //.-Guardar imagenes de beneficio
-                    ValidacionResponse vGuardarImagen = this.guardarImagenesBeneficios(request.getImagenesGenericas(),request.getImagenesBeneficio(),idProveedor,idBeneficio);
+                    ValidacionResponse vGuardarImagen = this.guardarImagenesBeneficios(request.getImagenesGenericas(),request.getImagenesBeneficio(),idProveedor,idBeneficio,request.getImagenesEscalables());
                     if(vGuardarImagen == null){
                         vGuardarImagen = new ValidacionResponse(new Validacion("1", "1", "Error al guardar imágenes de beneficio"));
                     }

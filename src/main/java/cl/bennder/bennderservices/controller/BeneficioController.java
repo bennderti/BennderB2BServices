@@ -47,6 +47,7 @@ public class BeneficioController {
     /***
      * Servicio expuesto para guardar datos de beneficio
      * @param request
+     * @param req 
      * @return 
      */
     @RequestMapping(value = "beneficio/guardar", method = RequestMethod.POST)

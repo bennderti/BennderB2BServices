@@ -8,6 +8,7 @@ package cl.bennder.bennderservices.services;
 import cl.bennder.entitybennderwebrest.model.BeneficioImagen;
 import cl.bennder.entitybennderwebrest.model.ImagenGenerica;
 import cl.bennder.entitybennderwebrest.model.Beneficio;
+import cl.bennder.entitybennderwebrest.model.ImagenEscalable;
 import cl.bennder.entitybennderwebrest.model.Validacion;
 import cl.bennder.entitybennderwebrest.request.CargarMantenedorBeneficioRequest;
 import cl.bennder.entitybennderwebrest.request.GetTodasCategoriaRequest;
@@ -29,6 +30,10 @@ import java.util.List;
  * @author dyanez
  */
 public interface BeneficioService {
+    
+    
+    public ImagenEscalable esImagenEscalable(String nombreImagen,List<ImagenEscalable> imagenes);
+    
     /***
      * Guarda/actualiza información de beneficio
      * @param request Datos de beneficio
@@ -66,8 +71,16 @@ public interface BeneficioService {
      */
     public InfoInicioBeneficioResponse getInfoInicioCreaActualizaBeneficio(InfoInicioBeneficioRequest request);
     
-    
-    public ValidacionResponse guardarImagenesBeneficios(List<ImagenGenerica> imagenesGenericas,List<BeneficioImagen> beneficioImagenes,Integer idProveedor,Integer idBeneficio);
+    /***
+     * 
+     * @param imagenesGenericas
+     * @param beneficioImagenes
+     * @param idProveedor
+     * @param idBeneficio
+     * @param imagenesEscalables
+     * @return 
+     */
+    public ValidacionResponse guardarImagenesBeneficios(List<ImagenGenerica> imagenesGenericas,List<BeneficioImagen> beneficioImagenes,Integer idProveedor,Integer idBeneficio,List<ImagenEscalable> imagenesEscalables);
     
     
         /***
