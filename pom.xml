@@ -236,6 +236,12 @@
             <version>${jjwt.version}</version>
         </dependency>
          <!--JSON Web Token fin-->
+        <!-- AWS SDK -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-bundle</artifactId>
+            <version>1.11.189</version>
+        </dependency>
     </dependencies>
 
     <build>

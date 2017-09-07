@@ -2,16 +2,31 @@ package cl.bennder.bennderservices.util;
 
 import cl.bennder.entitybennderwebrest.model.Beneficio;
 import cl.bennder.entitybennderwebrest.model.BeneficioImagen;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+
+import java.io.*;
 
 /**
  * Created by Diego on 30-03-2017.
  */
+@Component
 public class ImagenUtil {
     private static final Logger log = LoggerFactory.getLogger(ImagenUtil.class);
-    
+
+    @Value("${s3.bucketName}")
+    public String bucketName;
+
+    @Value("${directorio.imagen.location.server}")
+    private String dirProveedor;
     /***
      * Actualiza url http de imagen en servidor
      * @param server Servidor
@@ -42,5 +57,25 @@ public class ImagenUtil {
         else{
             return env.getProperty(keyPropertie).replaceAll("C:", "");
         }
+    }
+
+    public String guardarImagenEnAmazonS3(byte[] imagen,Integer idProveedor, Integer idMagen, String extension, Integer idBeneficio){
+
+
+        AmazonS3 amazonS3 = new AmazonS3Client();
+        String path = "/" + idProveedor + "/" + idBeneficio + "/" + idMagen.toString() + "." + extension;
+        String key = "dev" + "/" + dirProveedor + path;
+
+        try {
+            File file = File.createTempFile(idMagen.toString(), extension);
+            file.deleteOnExit();
+
+            FileUtils.writeByteArrayToFile(file, imagen);
+            amazonS3.putObject(new PutObjectRequest( bucketName, key, file));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return path;
     }
 }
