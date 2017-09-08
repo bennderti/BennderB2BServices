@@ -198,16 +198,16 @@ public class BeneficioServiceImpl implements BeneficioService{
                       //log.info("Guardando imagen escalada en sistema de archivos ruta temporal->{}",pathTemporal);
                       //path = this.guardaImagenSistemaArchivos(UtilsBennder.resizeImageGetByte(pathTemporal,imgEscable.getAnchoEscalable() , imgEscable.getAltoEscalable(), extension), idProveedor, idImagen,extension,idBeneficio);
 
-                      /*path = this.guardaImagenSistemaArchivos(bImg.getImagen(), idProveedor, idImagen,extension,idBeneficio);
+                      path = this.guardaImagenSistemaArchivos(bImg.getImagen(), idProveedor, idImagen,extension,idBeneficio);
                       String pathFileSystem = ImagenUtil.getValuePropertieOS(env, "directorio.imagen.raiz")+path;
                       log.info("Escalando imagen, pathFileSystem->{}",pathFileSystem);
                       UtilsBennder.resizeImage(pathFileSystem,imgEscable.getAnchoEscalable() , imgEscable.getAltoEscalable(),extension);
-                      */
-                      path = imagenUtil.guardarImagenEnAmazonS3(bImg.getImagen(), idProveedor, idImagen,extension,idBeneficio);
+//                      path = imagenUtil.guardarImagenEnAmazonS3(bImg.getImagen(), idProveedor, idImagen,extension,idBeneficio);
                   }
                   else{
                       log.info("Guardando imagen normal en sistema de archivos");
-                      path = imagenUtil.guardarImagenEnAmazonS3(bImg.getImagen(), idProveedor, idImagen,extension,idBeneficio);
+                      path = this.guardaImagenSistemaArchivos(bImg.getImagen(), idProveedor, idImagen,extension,idBeneficio);
+//                      path = imagenUtil.guardarImagenEnAmazonS3(bImg.getImagen(), idProveedor, idImagen,extension,idBeneficio);
                   }
                   log.info("path de imagen sistema archivos->{}",path);
                   if(path != null){  
