@@ -15,16 +15,18 @@ public class ParametroSistema {
     private String clave;
     private String valorA;
     private String valorB;
+    private String valorC;
 
     public ParametroSistema() {
     }
 
-    public ParametroSistema(Integer idParametro, String tipoParametro, String clave, String valorA, String valorB) {
+    public ParametroSistema(Integer idParametro, String tipoParametro, String clave, String valorA, String valorB, String valorC) {
         this.idParametro = idParametro;
         this.tipoParametro = tipoParametro;
         this.clave = clave;
         this.valorA = valorA;
         this.valorB = valorB;
+        this.valorC = valorC;
     }
 
     public Integer getIdParametro() {
@@ -66,6 +68,13 @@ public class ParametroSistema {
     public void setValorB(String valorB) {
         this.valorB = valorB;
     }
-    
-    
+
+
+    public String getValorC() {
+        return valorC;
+    }
+
+    public void setValorC(String valorC) {
+        this.valorC = valorC;
+    }
 }

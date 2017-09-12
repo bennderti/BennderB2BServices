@@ -185,6 +185,7 @@ public class EmailServicesImpl implements EmailServices{
                 EmailTemplate datosEmailTemplate = new EmailTemplate();
                 datosEmailTemplate.setMailFrom(paramCorreo.getValorA());
                 String passMailFrom = paramCorreo.getValorB();
+                String username = paramCorreo.getValorC();
                 //.- datos de plantilla
                 log.info("obteniendo datos de plantilla html...");
                 PlantillaCorreo plantillaCorreo = emailMapper.getDatosPlantillaCorreo(ID_TEMPLATE_RECUPERACION_CORREO);
@@ -207,7 +208,7 @@ public class EmailServicesImpl implements EmailServices{
                         log.info("obteniendo beans de email...");
                         ApplicationContext context = new ClassPathXmlApplicationContext(VELOCITY_BEANS_XML);
                         Mailer mailer = (Mailer) context.getBean("mailer");
-                        response = mailer.envioCorreoTemplate(datosEmailTemplate, passMailFrom); 
+                        response = mailer.envioCorreoTemplate(datosEmailTemplate, passMailFrom, username);
 //                    }
 //                    else{  
 //                        response.setCodigoNegocio("3");

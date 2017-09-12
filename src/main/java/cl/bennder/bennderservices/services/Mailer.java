@@ -75,7 +75,7 @@ public class Mailer {
      }
 
  }
- public Validacion envioCorreoTemplate(EmailTemplate emailTemplate, String passMailFrom){
+ public Validacion envioCorreoTemplate(EmailTemplate emailTemplate, String passMailFrom, String username){
      Validacion response = new Validacion("0", "1", "Problemas al enviar correo");
     log.info("inicio");
     try {
@@ -87,7 +87,7 @@ public class Mailer {
         message.setSubject(emailTemplate.getMailSubject());
         log.info("completando credenciales correo salida...");
         ((JavaMailSenderImpl)mailSender).setPassword(passMailFrom);
-        ((JavaMailSenderImpl)mailSender).setUsername(emailTemplate.getMailFrom());
+        ((JavaMailSenderImpl)mailSender).setUsername(username);
        
         log.info("obteniendo template...");
         Template template = velocityEngine.getTemplate("./templates/"+emailTemplate.getNombreTemplate(),"UTF-8");

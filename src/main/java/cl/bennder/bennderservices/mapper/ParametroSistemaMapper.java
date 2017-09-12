@@ -21,8 +21,8 @@ public interface ParametroSistemaMapper {
      * @param clave Clave de parametro
      * @return Datos de parametros de sistemas 
      */
-    @Select("SELECT TIPO_PARAMETRO AS tipoParametro,CLAVE as clave,VALOR_A as valorA,VALOR_B as valorB "
-          + "FROM PARAMETRO_SISTEMA "
-          + "WHERE TIPO_PARAMETRO =#{tp} AND CLAVE = #{c} ")
+    @Select(" SELECT TIPO_PARAMETRO AS tipoParametro,CLAVE as clave,VALOR_A as valorA,VALOR_B as valorB, VALOR_C as valorC"
+          + " FROM PARAMETRO_SISTEMA "
+          + " WHERE TIPO_PARAMETRO =#{tp} AND CLAVE = #{c} ")
     public ParametroSistema getDatosParametroSistema(@Param("tp") String tipoParametro,@Param("c") String clave);
 }

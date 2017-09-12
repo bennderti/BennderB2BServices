@@ -11,8 +11,8 @@
         http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
 <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-    <property name="host" value="mail.bennder.cl" />
-    <property name="port" value="25" />
+    <property name="host" value="email-smtp.us-west-2.amazonaws.com" />
+    <property name="port" value="465" />
     <!--<property name="username" value="soporte@bennder.cl" />
     <property name="password" value="soportebennder2017" />-->
     <property name="defaultEncoding" value="UTF-8"/>
@@ -20,7 +20,7 @@
      <props>
       <prop key="mail.debug">true</prop>
       <prop key="mail.smtp.auth">true</prop>
-      <!--<prop key="mail.smtp.starttls.enable">true</prop>-->
+      <prop key="mail.smtp.ssl.enable">true</prop>
       <prop key="mail.mime.charset">UTF-8</prop>
       <prop key="mail.transport.protocol">smtp</prop>
      </props>

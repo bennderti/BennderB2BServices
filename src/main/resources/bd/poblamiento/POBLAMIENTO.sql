@@ -20,7 +20,7 @@ values(1,'recuperacion-password.vm','Recuperación Contraseña','Plantilla utili
 /*==============================================================*/
 
 INSERT INTO PROVEEDOR.PARAMETRO_SISTEMA(TIPO_PARAMETRO,CLAVE,VALOR_A,VALOR_B)
-VALUES('CORREO_SOPORTE','CREDENCIALES','soporte@bennder.cl','soportebennder2017');
+VALUES('CORREO_SOPORTE','CREDENCIALES','soporte@bennder.club','bennderti2017','driveros@bennder.club');
 
 /*==============================================================*/
 /*Parámetros para correo de salida  */
