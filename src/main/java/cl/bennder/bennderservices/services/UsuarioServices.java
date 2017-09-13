@@ -6,11 +6,10 @@
 package cl.bennder.bennderservices.services;
 
 import cl.bennder.entitybennderwebrest.request.CambioPasswordRequest;
-import cl.bennder.entitybennderwebrest.request.GuardarPreferenciasRequest;
+//import cl.bennder.entitybennderwebrest.request.GuardarPreferenciasRequest;
 import cl.bennder.entitybennderwebrest.request.LoginRequest;
 import cl.bennder.entitybennderwebrest.response.CambioPasswordResponse;
 import cl.bennder.entitybennderwebrest.response.LoginResponse;
-import cl.bennder.entitybennderwebrest.response.ValidacionResponse;
 
 
 /**
@@ -27,7 +26,7 @@ public interface UsuarioServices {
      * @param idUsuario identificador de usuario
      */
     public void registraAccesoUsuario(Integer idUsuario);
-    public ValidacionResponse guardarDatosBienvenidaUsuario(GuardarPreferenciasRequest request);
+    //public ValidacionResponse guardarDatosBienvenidaUsuario(GuardarPreferenciasRequest request);
     public CambioPasswordResponse cambioPassword(CambioPasswordRequest request);
     
 }
