@@ -120,6 +120,7 @@ public class UsuarioServicesImpl implements UsuarioServices{
         log.info("FIN");
         return response;
     }
+
     
 //    @Override
 //    public ValidacionResponse guardarDatosBienvenidaUsuario(GuardarPreferenciasRequest request) {
