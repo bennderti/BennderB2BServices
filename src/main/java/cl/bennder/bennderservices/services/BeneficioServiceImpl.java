@@ -40,11 +40,21 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.annotation.Resource;
+
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.ListObjectsRequest;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -73,8 +83,23 @@ public class BeneficioServiceImpl implements BeneficioService{
     @Autowired
     private BeneficioMapper beneficioMapper;
     
-     @Autowired
+    @Autowired
     private ProveedorMapper proveedorMapper;
+
+    @Value("${bucketImagenes}")
+    private String bucketImagenes;
+
+    @Value("${S3Server}")
+    private String S3Server;
+
+    @Value("${environment}")
+    private String environment;
+
+    @Value("${directorio.imagen.generica.location.server}")
+    private String imagenGenericaLocation;
+
+    @Value("${directorio.imagen.location.server}")
+    private String dirProveedor;
 
     @Override
     public ImagenEscalable esImagenEscalable(String nombreImagen, List<ImagenEscalable> imagenes) {
@@ -145,115 +170,117 @@ public class BeneficioServiceImpl implements BeneficioService{
         log.info("fin");
         return ruta;
     }
-     
-     
+
+
 
     @Override
     public ValidacionResponse guardarImagenesBeneficios(List<ImagenGenerica> imagenesGenericas,List<BeneficioImagen> beneficioImagenes, Integer idProveedor, Integer idBeneficio,List<ImagenEscalable> imagenesEscalables) {
-       ValidacionResponse response = new ValidacionResponse();
-       response.setValidacion(new Validacion("0","1","Problemas al guardar imagenes"));
-       log.info("inicio");
+        ValidacionResponse response = new ValidacionResponse();
+        response.setValidacion(new Validacion("0","1","Problemas al guardar imagenes"));
+        log.info("inicio");
         try {
-            
+
             Integer maxImagenes = proveedorMapper.getMaxImagenPlanProveedor(idProveedor);
             log.info("máximo de imagenes permitidas ->{}",maxImagenes);
-            
-            if(beneficioImagenes != null && beneficioImagenes.size() > 0){
-               log.info("request.getBeneficioImagenes().size() ->{}",beneficioImagenes.size() );
-               if(beneficioImagenes.size() > maxImagenes){
-                   response.getValidacion().setCodigoNegocio("2");
-                   response.getValidacion().setMensaje("Ud ha no puede cargar más de "+maxImagenes+" configuradas para su comercio (plan básico) al crear/editar promoción.");
-                   log.info("Ud ha no puede cargar más de "+maxImagenes+" configuradas para su comercio (plan básico) al crear/editar promoción.",idBeneficio);
-                   return response;
-               }
-               
-               
-               
-               
-               
-               //Integer idBeneficio = beneficioImagenes.get(0).getIdBeneficio();
-               log.info("Cargando imagenes a beneficio(id) ->{}",idBeneficio); 
-               log.info("Eliminando imagenes anteriores(base datos)");
-               beneficioMapper.eliminarImagenesBeneficio(idBeneficio);
-               log.info("Eliminando imagenes de beneficio del proveedor");
-               String rutaRaiz = ImagenUtil.getValuePropertieOS(env, "directorio.imagen.proveedor");//PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_PROVEEDOR;//ImagenUtil.getValuePropertieOS(env, "directorio.imagen.proveedor");//env.getProperty("directorio.imagen.proveedor");
-               String directorioBeneficio = rutaRaiz + File.separator + idProveedor.toString() + File.separator + idBeneficio.toString();
-               log.info("Eliminando imagenes directorio de beneficio ->{}",directorioBeneficio);
-               UtilsBennder.cleanDirectory(directorioBeneficio, false);
-               int i = 1;
-               boolean datosBeneficioOk = true;
-               for(BeneficioImagen bImg : beneficioImagenes){
-                  log.info("Datos beneficio iamgen a cargar ->{}",bImg.toString());
-                  Integer idImagen = beneficioMapper.getSeqIdImagen();
-                  String extension = FilenameUtils.getExtension(bImg.getNombre());
-                  String path = "";
-                  ImagenEscalable imgEscable = esImagenEscalable(bImg.getNombre(), imagenesEscalables);
-                  if(imgEscable != null){
-                      //String locationServer = ImagenUtil.getValuePropertieOS(env, "directorio.imagen.location.server");//PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_LOCATION_SERVER;//ImagenUtil.getValuePropertieOS(env, "directorio.imagen.location.server");//env.getProperty("directorio.imagen.location.server");
-                      //log.info("locationServer(escalable)->{}",locationServer);                      
-                      //String ruta = locationServer  + idProveedor.toString()+ "/" + idBeneficio.toString() + "/" + idImagen.toString()+ "."+extension;                      
-                      
-                      //String pathTemporal = System.getProperty("java.io.tmpdir")+idBeneficio.toString() + File.pathSeparator +idImagen.toString() + "."+extension;
-                      //String pathTemporal = System.getProperty("java.io.tmpdir")+idImagen.toString() + "."+extension;
-                      //log.info("Guardando imagen escalada en sistema de archivos ruta temporal->{}",pathTemporal);
-                      //path = this.guardaImagenSistemaArchivos(UtilsBennder.resizeImageGetByte(pathTemporal,imgEscable.getAnchoEscalable() , imgEscable.getAltoEscalable(), extension), idProveedor, idImagen,extension,idBeneficio);
 
-                      path = this.guardaImagenSistemaArchivos(bImg.getImagen(), idProveedor, idImagen,extension,idBeneficio);
-                      String pathFileSystem = ImagenUtil.getValuePropertieOS(env, "directorio.imagen.raiz")+path;
-                      log.info("Escalando imagen, pathFileSystem->{}",pathFileSystem);
-                      UtilsBennder.resizeImage(pathFileSystem,imgEscable.getAnchoEscalable() , imgEscable.getAltoEscalable(),extension);
-//                      path = imagenUtil.guardarImagenEnAmazonS3(bImg.getImagen(), idProveedor, idImagen,extension,idBeneficio);
-                  }
-                  else{
-                      log.info("Guardando imagen normal en sistema de archivos");
-                      path = this.guardaImagenSistemaArchivos(bImg.getImagen(), idProveedor, idImagen,extension,idBeneficio);
-//                      path = imagenUtil.guardarImagenEnAmazonS3(bImg.getImagen(), idProveedor, idImagen,extension,idBeneficio);
-                  }
-                  log.info("path de imagen sistema archivos->{}",path);
-                  if(path != null){  
-                      bImg.setIdBeneficio(idBeneficio);
-                      bImg.setIdImagen(idImagen);
-                      bImg.setPath(path);
-                      
-                      //if(bImg.getOrden() == null){
-                         // log.info("Sin orden definido por tanto se aplica según posición en lista ->{}",i);
-                          bImg.setOrden(i);
-                          i++;
-                      //}
-                      if(bImg.getNombre() == null || bImg.getNombre() == null){
-                          log.info("Sin nombre de imagen",i);
-                          datosBeneficioOk = false;
-                          break;
-                      }
-                      else{
-                        log.info("Guandando información de imagen en db ->{}",bImg.toString());
-                        beneficioMapper.guardaImagenBeneficio(bImg);
-                      }
-                  }
-               }
-               if(datosBeneficioOk){
-                response.getValidacion().setCodigoNegocio("0");
-                response.getValidacion().setMensaje("Imagenes cargadas correctamente");
-                log.info("Imagenes cargadas correctamente para beneficio(id) ->{}",idBeneficio);
-               }
-               else{
-                   response.getValidacion().setCodigoNegocio("1");
-                   response.getValidacion().setMensaje("Faltan datos de imagen a guardar");
-                   log.info("Faltan datos de imagen a guardar para beneficio(id) ->{}",idBeneficio);
-               }
+            if(beneficioImagenes != null && beneficioImagenes.size() > 0){
+                log.info("request.getBeneficioImagenes().size() ->{}",beneficioImagenes.size() );
+                if(beneficioImagenes.size() > maxImagenes){
+                    response.getValidacion().setCodigoNegocio("2");
+                    response.getValidacion().setMensaje("Ud ha no puede cargar más de "+maxImagenes+" configuradas para su comercio (plan básico) al crear/editar promoción.");
+                    log.info("Ud ha no puede cargar más de "+maxImagenes+" configuradas para su comercio (plan básico) al crear/editar promoción.",idBeneficio);
+                    return response;
+                }
+
+
+
+
+
+                //Integer idBeneficio = beneficioImagenes.get(0).getIdBeneficio();
+                log.info("Cargando imagenes a beneficio(id) ->{}",idBeneficio);
+                log.info("Eliminando imagenes anteriores(base datos)");
+                beneficioMapper.eliminarImagenesBeneficio(idBeneficio);
+                log.info("Eliminando imagenes de beneficio del proveedor");
+                String rutaRaiz = ImagenUtil.getValuePropertieOS(env, "directorio.imagen.proveedor");//PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_PROVEEDOR;//ImagenUtil.getValuePropertieOS(env, "directorio.imagen.proveedor");//env.getProperty("directorio.imagen.proveedor");
+                String directorioBeneficio = environment + dirProveedor + idProveedor.toString() + "/" + idBeneficio.toString();
+                log.info("Eliminando imagenes directorio de beneficio ->{}",directorioBeneficio);
+//               UtilsBennder.cleanDirectory(directorioBeneficio, false);
+                imagenUtil.eliminarImagenAmazonS3(directorioBeneficio);
+
+                int i = 1;
+                boolean datosBeneficioOk = true;
+                for(BeneficioImagen bImg : beneficioImagenes){
+                    log.info("Datos beneficio iamgen a cargar ->{}",bImg.toString());
+                    Integer idImagen = beneficioMapper.getSeqIdImagen();
+                    String extension = FilenameUtils.getExtension(bImg.getNombre());
+                    String path = "";
+                    ImagenEscalable imgEscable = esImagenEscalable(bImg.getNombre(), imagenesEscalables);
+                    if(imgEscable != null){
+                        //String locationServer = ImagenUtil.getValuePropertieOS(env, "directorio.imagen.location.server");//PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_LOCATION_SERVER;//ImagenUtil.getValuePropertieOS(env, "directorio.imagen.location.server");//env.getProperty("directorio.imagen.location.server");
+                        //log.info("locationServer(escalable)->{}",locationServer);
+                        //String ruta = locationServer  + idProveedor.toString()+ "/" + idBeneficio.toString() + "/" + idImagen.toString()+ "."+extension;
+
+                        //String pathTemporal = System.getProperty("java.io.tmpdir")+idBeneficio.toString() + File.pathSeparator +idImagen.toString() + "."+extension;
+                        //String pathTemporal = System.getProperty("java.io.tmpdir")+idImagen.toString() + "."+extension;
+                        //log.info("Guardando imagen escalada en sistema de archivos ruta temporal->{}",pathTemporal);
+                        //path = this.guardaImagenSistemaArchivos(UtilsBennder.resizeImageGetByte(pathTemporal,imgEscable.getAnchoEscalable() , imgEscable.getAltoEscalable(), extension), idProveedor, idImagen,extension,idBeneficio);
+
+//                      path = this.guardaImagenSistemaArchivos(bImg.getImagen(), idProveedor, idImagen,extension,idBeneficio);
+//                      String pathFileSystem = ImagenUtil.getValuePropertieOS(env, "directorio.imagen.raiz")+path;
+//                      UtilsBennder.resizeImage(pathFileSystem,imgEscable.getAnchoEscalable() , imgEscable.getAltoEscalable(),extension);
+
+                        path = imagenUtil.guardarImagenEnAmazonS3(bImg.getImagen(), idProveedor, idImagen,extension,idBeneficio, Optional.of(imgEscable));
+                    }
+                    else{
+                        log.info("Guardando imagen normal en sistema de archivos");
+//                      path = this.guardaImagenSistemaArchivos(bImg.getImagen(), idProveedor, idImagen,extension,idBeneficio);
+                        path = imagenUtil.guardarImagenEnAmazonS3(bImg.getImagen(), idProveedor, idImagen,extension,idBeneficio, Optional.empty());
+                    }
+                    log.info("path de imagen sistema archivos->{}",path);
+                    if(path != null){
+                        bImg.setIdBeneficio(idBeneficio);
+                        bImg.setIdImagen(idImagen);
+                        bImg.setPath(path);
+
+                        //if(bImg.getOrden() == null){
+                        // log.info("Sin orden definido por tanto se aplica según posición en lista ->{}",i);
+                        bImg.setOrden(i);
+                        i++;
+                        //}
+                        if(bImg.getNombre() == null || bImg.getNombre() == null){
+                            log.info("Sin nombre de imagen",i);
+                            datosBeneficioOk = false;
+                            break;
+                        }
+                        else{
+                            log.info("Guandando información de imagen en db ->{}",bImg.toString());
+                            beneficioMapper.guardaImagenBeneficio(bImg);
+                        }
+                    }
+                }
+                if(datosBeneficioOk){
+                    response.getValidacion().setCodigoNegocio("0");
+                    response.getValidacion().setMensaje("Imagenes cargadas correctamente");
+                    log.info("Imagenes cargadas correctamente para beneficio(id) ->{}",idBeneficio);
+                }
+                else{
+                    response.getValidacion().setCodigoNegocio("1");
+                    response.getValidacion().setMensaje("Faltan datos de imagen a guardar");
+                    log.info("Faltan datos de imagen a guardar para beneficio(id) ->{}",idBeneficio);
+                }
             }
             else{
                 log.info("Validando si se agregaron imagenes genéricas...");
                 if(imagenesGenericas!=null && imagenesGenericas.size() > 0)
                 {
-                    
+
                     if(imagenesGenericas.size() > maxImagenes){
                         response.getValidacion().setCodigoNegocio("2");
                         response.getValidacion().setMensaje("Ud ha no puede cargar más de "+maxImagenes+" configuradas para su comercio (plan básico) al crear/editar promoción.");
                         log.info("Ud ha no puede cargar más de "+maxImagenes+" configuradas para su comercio (plan básico) al crear/editar promoción.",idBeneficio);
                         return response;
                     }
-                    
+
                     int i = 1;
                     BeneficioImagen bImg = null;
                     //boolean datosBeneficioOk = true;
@@ -262,11 +289,11 @@ public class BeneficioServiceImpl implements BeneficioService{
                     for(ImagenGenerica imgGenerica : imagenesGenericas){
                         log.info("Datos beneficio iamgen a cargar ->{}",imgGenerica.toString());
                         Integer idImagen = beneficioMapper.getSeqIdImagen();
-                        bImg  = new BeneficioImagen();                         
+                        bImg  = new BeneficioImagen();
                         //if(bImg.getOrden() == null){
-                            //log.info("Sin orden definido por tanto se aplica según posición en lista ->{}",i);
-                            bImg.setOrden(i);
-                            i++;
+                        //log.info("Sin orden definido por tanto se aplica según posición en lista ->{}",i);
+                        bImg.setOrden(i);
+                        i++;
                         //}
                         String[] urls = imgGenerica.getUrlImagen().split("[/]+");
                         bImg.setNombre(urls[urls.length-1]);
@@ -276,22 +303,23 @@ public class BeneficioServiceImpl implements BeneficioService{
 //                            break;
 //                        }
 //                        else{
-                            String server = env.getProperty("server");//PropertiesDirectorioImagen.SERVER;//env.getProperty("server");
-                            String urlSinServer = imgGenerica.getUrlImagen().replaceAll(server, "");
-                            log.info("urlSinServer ->{}",urlSinServer);
-                            bImg.setIdBeneficio(idBeneficio);
-                            bImg.setIdImagen(idImagen);
-                            bImg.setPath(urlSinServer);
-                            //bImg.setNombre(imgGenerica.getNombre());
-                           log.info("Guandando información de imagen en db ->{}",bImg.toString());
-                           beneficioMapper.guardaImagenBeneficio(bImg);
+                        //Diego Riveros - cambio a S3Server
+                        String server = env.getProperty("server");//PropertiesDirectorioImagen.SERVER;//env.getProperty("server");
+                        String urlSinServer = imgGenerica.getUrlImagen().replaceAll(S3Server+bucketImagenes+ "/" + environment, "");
+                        log.info("urlSinServer ->{}",urlSinServer);
+                        bImg.setIdBeneficio(idBeneficio);
+                        bImg.setIdImagen(idImagen);
+                        bImg.setPath(urlSinServer);
+                        //bImg.setNombre(imgGenerica.getNombre());
+                        log.info("Guandando información de imagen en db ->{}",bImg.toString());
+                        beneficioMapper.guardaImagenBeneficio(bImg);
                         //}
-                    
+
                     }
 //                    if(datosBeneficioOk){
-                        response.getValidacion().setCodigoNegocio("0");
-                        response.getValidacion().setMensaje("Imagenes cargadas correctamente");
-                        log.info("Imagenes cargadas correctamente para beneficio(id) ->{}",idBeneficio);
+                    response.getValidacion().setCodigoNegocio("0");
+                    response.getValidacion().setMensaje("Imagenes cargadas correctamente");
+                    log.info("Imagenes cargadas correctamente para beneficio(id) ->{}",idBeneficio);
 //                    }
 //                    else{
 //                        response.getValidacion().setCodigoNegocio("1");
@@ -341,87 +369,36 @@ public class BeneficioServiceImpl implements BeneficioService{
                         //.- recorriendo categoria/subcategorias
                         //.- ¿existe diretorio categoria sub-categoria?
                         //.si: listamos y guardamos las rutas de imagenes de dicho directorio
-                        
+
                         if(response.getCategorias()!=null && response.getCategorias().size() > 0){
-                            String rutaRaiz = ImagenUtil.getValuePropertieOS(env, "directorio.imagen.generica.categoria");//PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_GENERICA_CATEGORIA;//ImagenUtil.getValuePropertieOS(env, "directorio.imagen.generica.categoria");//env.getProperty("directorio.imagen.generica.categoria");
-                            log.info("rutaRaiz de imágenes genéricas de categorias->{}",rutaRaiz);
-                            String server = env.getProperty("server");//PropertiesDirectorioImagen.SERVER;//env.getProperty("server");
-                            String locationServer = env.getProperty("directorio.imagen.generica.location.server");//PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_GENERICA_LOCATION_SERVER;//env.getProperty("directorio.imagen.generica.location.server");
-                            log.info("server:{},locationServer:{}",server,locationServer);
-                            for(Categoria c : response.getCategorias()){
-                                File dirCategoria = new File(rutaRaiz + File.separator + c.getIdCategoria().toString());
-                                if(dirCategoria.exists()){
-                                    log.info("Directorio categoria ->{}",dirCategoria.getAbsolutePath());
-                                    if(c.getSubCategorias()!=null && c.getSubCategorias().size() > 0){
-                                        for(Categoria sc : c.getSubCategorias()){
-                                            File dirSubCategoria = new File(dirCategoria.getAbsolutePath() + File.separator + sc.getIdCategoria().toString());
-                                            if(dirSubCategoria.exists()){
-                                                //log.info("Listando y agregagando imagenes genericas ubicadas en directorio ->{}",dirSubCategoria.getAbsolutePath());
-                                                File[] listOfFiles = dirSubCategoria.listFiles();
-                                                if(listOfFiles!=null && listOfFiles.length > 0){
-                                                    for(File f : listOfFiles){
-                                                        if (f.isFile()) {
-                                                          log.info("Imagen encontrada ->{} ya agregada para categoria({}) y subcategoria({}).",f.getName(),c.getIdCategoria(),sc.getIdCategoria());
-                                                          String urlImagen = server + locationServer + c.getIdCategoria() + "/" + sc.getIdCategoria() + "/" + f.getName();
-                                                          log.info("urlImagen ->{}",urlImagen);
-                                                          response.getImgenesGenericas().add(new ImagenGenerica(c.getIdCategoria(), sc.getIdCategoria(), f.getName(), null, null, urlImagen));
+                            generarRutaImagenesGenericasS3(request, response);
 
-                                                        }
-                                                    }
-                                                }
-                                                else{
-                                                    log.info("Sin imagenes encontradas para directorio ->{}",dirSubCategoria.getAbsolutePath());
-                                                }
-
-                                            }
-                                            else{
-                                                log.info("Directorio sub-categoria ->{} no existe",dirSubCategoria.getAbsolutePath());
-                                            }
-                                        }
-                                    }
-                                    else{
-                                        log.info("sin subcategorias para categoria({}) ->{}",c.getIdCategoria(),c.getNombre());
-                                    }
+                            if(request.getIdBeneficio()!=null){
+                                log.info("obteniendo datos de beneficio ->{}",request.getIdBeneficio());
+                                response.setDatosBeneficio(this.getDatosBeneficio(request.getIdBeneficio()));
+                                if(response.getDatosBeneficio()!=null){//
+                                    log.info("Datos de beneficio OK");
+                                    response.getValidacion().setCodigoNegocio("0");
+                                    response.getValidacion().setMensaje("Datos de beneficio OK");
                                 }
                                 else{
-                                    log.info("No existe directorio para categoria({}) ->{}",c.getIdCategoria(),c.getNombre());
+                                    log.info("Problemas al obtener datos de beneficio");
+                                    response.getValidacion().setCodigoNegocio("5");
+                                    response.getValidacion().setMensaje("Problemas al obtener datos de beneficio");
                                 }
                             }
-//                            if(response.getImgenesGenericas()!=null && response.getImgenesGenericas().size() > 0){
-                                
-                                if(request.getIdBeneficio()!=null){
-                                    log.info("obteniendo datos de beneficio ->{}",request.getIdBeneficio());
-                                    response.setDatosBeneficio(this.getDatosBeneficio(request.getIdBeneficio()));                                    
-                                    if(response.getDatosBeneficio()!=null){//                                        
-                                        log.info("Datos de beneficio OK");
-                                        response.getValidacion().setCodigoNegocio("0");
-                                        response.getValidacion().setMensaje("Datos de beneficio OK");
-                                    }
-                                    else{
-                                        log.info("Problemas al obtener datos de beneficio");
-                                        response.getValidacion().setCodigoNegocio("5");
-                                        response.getValidacion().setMensaje("Problemas al obtener datos de beneficio");
-                                    }
-                                }
-                                else{
-                                    log.info("Datos inicio OK");
-                                    response.getValidacion().setCodigoNegocio("0");
-                                    response.getValidacion().setMensaje("Datos inicio OK");
-                                }
-                                
-//                            }
-//                            else{
-//                                log.info("ISin información de imagenes genéricas");
-//                                response.getValidacion().setCodigoNegocio("4");
-//                                response.getValidacion().setMensaje("Imagenes cargadas correctamente");
-//                            }
-                            
+                            else{
+                                log.info("Datos inicio OK");
+                                response.getValidacion().setCodigoNegocio("0");
+                                response.getValidacion().setMensaje("Datos inicio OK");
+                            }
+
                         }
                         else{
                             log.info("Sin categorias");
                             response.getValidacion().setCodigoNegocio("3");
                             response.getValidacion().setMensaje("Sin categorias");
-                        }                        
+                        }
                         
                     }
                     else{
@@ -1173,9 +1150,10 @@ public class BeneficioServiceImpl implements BeneficioService{
             datosBeneficio.setTipoBeneficio(beneficio.getTipoBeneficio());
             datosBeneficio.setTieneImagenGenerica(beneficio.isTieneImagenGenerica());       
             String server = env.getProperty("server");//PropertiesDirectorioImagen.SERVER;//env.getProperty("server");
-            ImagenUtil.setUrlImagenesBenecio(server, beneficio);
+//            ImagenUtil.setUrlImagenesBenecio(S3Server, beneficio);
+            imagenUtil.setUrlImagenesBenecioS3(S3Server, beneficio);
             datosBeneficio.setImagenesBeneficio(beneficio.getImagenesBeneficio());
-            
+
             
             
             log.info("Datos de datosBeneficio ->{}",datosBeneficio.toString());
@@ -1187,6 +1165,87 @@ public class BeneficioServiceImpl implements BeneficioService{
         log.info("fin");
         return datosBeneficio;
     }
-    
-    
+
+    private void generarRutaImagenesGenericas(InfoInicioBeneficioRequest request, InfoInicioBeneficioResponse response){
+
+        String rutaRaiz = ImagenUtil.getValuePropertieOS(env, "directorio.imagen.generica.categoria");//PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_GENERICA_CATEGORIA;//ImagenUtil.getValuePropertieOS(env, "directorio.imagen.generica.categoria");//env.getProperty("directorio.imagen.generica.categoria");
+        log.info("rutaRaiz de imágenes genéricas de categorias->{}",rutaRaiz);
+        String server = env.getProperty("server");//PropertiesDirectorioImagen.SERVER;//env.getProperty("server");
+        String locationServer = env.getProperty("directorio.imagen.generica.location.server");//PropertiesDirectorioImagen.DIRECTORIO_IMAGEN_GENERICA_LOCATION_SERVER;//env.getProperty("directorio.imagen.generica.location.server");
+        log.info("server:{},locationServer:{}",server,locationServer);
+        for(Categoria c : response.getCategorias()){
+            File dirCategoria = new File(rutaRaiz + File.separator + c.getIdCategoria().toString());
+            if(dirCategoria.exists()){
+                log.info("Directorio categoria ->{}",dirCategoria.getAbsolutePath());
+                if(c.getSubCategorias()!=null && c.getSubCategorias().size() > 0){
+                    for(Categoria sc : c.getSubCategorias()){
+                        File dirSubCategoria = new File(dirCategoria.getAbsolutePath() + File.separator + sc.getIdCategoria().toString());
+                        if(dirSubCategoria.exists()){
+                            //log.info("Listando y agregagando imagenes genericas ubicadas en directorio ->{}",dirSubCategoria.getAbsolutePath());
+                            File[] listOfFiles = dirSubCategoria.listFiles();
+                            if(listOfFiles!=null && listOfFiles.length > 0){
+                                for(File f : listOfFiles){
+                                    if (f.isFile()) {
+                                        log.info("Imagen encontrada ->{} ya agregada para categoria({}) y subcategoria({}).",f.getName(),c.getIdCategoria(),sc.getIdCategoria());
+                                        String urlImagen = server + locationServer + c.getIdCategoria() + "/" + sc.getIdCategoria() + "/" + f.getName();
+                                        log.info("urlImagen ->{}",urlImagen);
+                                        response.getImgenesGenericas().add(new ImagenGenerica(c.getIdCategoria(), sc.getIdCategoria(), f.getName(), null, null, urlImagen));
+
+                                    }
+                                }
+                            }
+                            else{
+                                log.info("Sin imagenes encontradas para directorio ->{}",dirSubCategoria.getAbsolutePath());
+                            }
+
+                        }
+                        else{
+                            log.info("Directorio sub-categoria ->{} no existe",dirSubCategoria.getAbsolutePath());
+                        }
+                    }
+                }
+                else{
+                    log.info("sin subcategorias para categoria({}) ->{}",c.getIdCategoria(),c.getNombre());
+                }
+            }
+            else{
+                log.info("No existe directorio para categoria({}) ->{}",c.getIdCategoria(),c.getNombre());
+            }
+        }
+    }
+
+    private void generarRutaImagenesGenericasS3(InfoInicioBeneficioRequest request, InfoInicioBeneficioResponse response){
+
+        final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.US_WEST_2).build();
+
+//        List<ObjectListing> objectListings = response.getCategorias()
+//                .forEach(categoria -> categoria.getSubCategorias().stream()
+//                    .filter(subCategoria -> s3.doesObjectExist(bucketImagenes, imagenGenericaLocation + "/" +
+//                            categoria.getIdCategoria() + "/" + subCategoria.getIdCategoria()))
+//                    .map(s -> s3.listObjects(bucketImagenes, imagenGenericaLocation + "/" +
+//                            categoria.getIdCategoria() + "/" + s.getIdCategoria()))
+//                        .collect(Collectors.toList())
+//                    );
+
+        for(Categoria c : response.getCategorias()){
+            if(c.getSubCategorias()!=null && c.getSubCategorias().size() > 0) {
+                for (Categoria sc : c.getSubCategorias()) {
+                    String dirSubCategoria = environment + imagenGenericaLocation + c.getIdCategoria() + "/" + sc.getIdCategoria();
+                    ObjectListing ol = s3.listObjects(bucketImagenes, dirSubCategoria);
+                    List<S3ObjectSummary> s3ObjectSummaries = ol.getObjectSummaries();
+//                        s3ObjectSummaries.stream().map(s3ObjectSummary -> s3ObjectSummary.getKey());
+                    s3ObjectSummaries.forEach(s3ObjectSummary -> {
+                        log.info(s3ObjectSummary.getKey());
+                        String[] ruta = s3ObjectSummary.getKey().split("/");
+                        String filename = ruta[ruta.length - 1];
+                        String urlImagen = S3Server + bucketImagenes + "/" + s3ObjectSummary.getKey();
+                        response.getImgenesGenericas().add(new ImagenGenerica(c.getIdCategoria(), sc.getIdCategoria(), filename, null, null, urlImagen));
+                    });
+                }
+            }
+            else{
+                log.info("sin subcategorias para categoria({}) ->{}",c.getIdCategoria(),c.getNombre());
+            }
+        }
+    }
 }
